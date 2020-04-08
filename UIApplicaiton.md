@@ -61,11 +61,15 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 
   
 
-  事实上，当你在Appdelegate中的window调用`makeKeyAndVisible`方法之前打印keyWindow，会发现为`null`，一个window只需要调用`makeKeyAndVisible`方法就可以成为keyWindow。
+  事实上，当你在Appdelegate中的window调用`makeKeyAndVisible`方法之前打印keyWindow，会发现为`null`，一个window只需要调用`makeKeyAndVisible`方法就可以成为keyWindow。已经废弃的UIAlertView在展示的时候keyWindow也会发生变化，如下所示：
 
-  所以keyWindow有可能是会改变的
+  ![AlertView的keyWindow](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/image-2020040809112985320200408093931.png)
 
-  * keyWindow永远显示在想同级别的最上层
+  所以keyWindow有可能是会改变的，但是同一时间只会有一个UIWindow是keyWindow
+
+  UIWindow是根据UIWindowLevel来进行排序的，level高的将排在所有比他低的层级前面，keyWindow显示在相同级别的最上层。
+
+  
 
 
 
