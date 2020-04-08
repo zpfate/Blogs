@@ -71,5 +71,56 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 
   
 
+  * windows
+
+    ```objc
+    [UIApplication sharedApplication].windows
+    ```
+
+#### 打开 URL 资源 
+
+```objc
+// iOS 10废弃
+[UIApplication sharedApplication] openURL 
+[UIApplication sharedApplication] openURL:options:completionHandler:
+```
+
+
+
+#### 控制和处理事件
+
+- \- sendEvent: 将事件调度到 app 中的相应响应者对象
+- \- sendAction:to:from:forEvent: : 将选择器识别的动作消息发送到指定目标
+- \- beginIgnoringInteractionEvents : 告知接收者暂停处理触摸事件
+- \- endIgnoringInteractionEvents : 告知接收者恢复相关事件的处理
+- ignoringInteractionEvents : 一个布尔值, 指示接收者是否忽略由触摸在屏幕上启动的事件
+- applicationSupportsShakeToEdit : 一个布尔值,用于确定摇动设备是否显示撤销重做用户界面
+
+#### 注册远程通知 
+
+* registerForRemoteNotifications : 注册通过 Apple Push Notification 服务接收远程通知.
+
+* unregisterForRemoteNotifications : 取消注册通过 Apple Push Notification 服务接收远程通知.
+
+* registeredForRemoteNotifications : 一个布尔值, 指示 app 当前是否注册了远程通知.
+
+#### 管理后台执行
+
+* applicationState :  app 的 runtime 状态
+
+* backgroundTimeRemaining : app 在后台运行的时间量
+
+* backgroundRefreshStatus : app 进入到后台,使其可以执行 background behaviors 的能力.
+
+* setMinimumBackgroundFetchInterval: 指定后台提取操作之间必须经过的最短时间.
+
+* beginBackgroundTaskWithName:expirationHandler: 标记具有指定名称的新的长时间运行的后台任务开始.
+
+* beginBackgroundTaskWithExpirationHandler : 标记着一个新的长期运行的后台任务的开始.
+
+* endBackgroundTask : 标记特定长时间运行的后台任务结束.
+
+
+
 
 
