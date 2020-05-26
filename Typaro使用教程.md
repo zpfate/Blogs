@@ -54,4 +54,51 @@ brew cask install uPic
 
   ![uPic logo](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/image-2020040716214522020200407162145.png)
 
-到这里，大公告成~
+到这里，大功告成~
+
+如果打开uPic显示 `xxx.app可能会损坏您的电脑，您应该将他移入废纸篓`云云，解决方法如下：
+
+> ### 1. macOS Mojave 10.14及以下系统：
+>
+> 打开「终端.app」，输入以下命令并回车，输入开机密码回车
+>
+> ```shell
+> sudo xattr -rd com.apple.quarantine 空格 软件的路径
+> ```
+>
+> ### 2. macOS Catalina 10.15系统：
+>
+> 打开「终端.app」，输入以下命令并回车，输入开机密码回车
+>
+> ```shell
+> sudo xattr -rd com.apple.quarantine 空格 软件的路径
+> ```
+>
+> ### 3. macOS Catalina 10.15.4 系统：
+>
+> ```
+> sudo codesign --force --deep --sign - (应用路径)
+> ```
+>
+> **错误解决**
+>
+> 如出现以下错误提示：
+>
+> ![错误提示](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2020_05_26_15_05_43.png)
+>
+> 那么，先在终端执行：
+>
+> ```shell
+> xattr -cr /文件位置（直接将应用拖进去即可）
+> ```
+>
+> 然后再次执行如下指令即可：
+>
+> ```shell
+> codesign --force --deep --sign - /文件位置（直接将应用拖进去即可）
+> ```
+
+
+
+
+
