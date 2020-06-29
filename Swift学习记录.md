@@ -1,10 +1,14 @@
-## REPL
+## 编写Swift
+
+### 1.REPL
 
 在终端中直接输入`swift`敲回车就可以进入REPL，可以在里面编写`Swift`代码
 
-## Playground
+![REPL](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2020_06_04_15_17_02.png "REPL")
 
-打开`Xcode`选择第一个`playground`就可以进行编写`Swift`代码
+### 2.Xcode Playground
+
+打开`Xcode`选择第一个`playground`就可以进行编写`Swift`代码，（当然也可以新建一个工程编写Swift）
 
 在`playground`中想要使用`liveView`的功能需要
 
@@ -45,4 +49,23 @@ if let actualOptionalString = optionalString {
 ```swift
 let optionalStringCount = optionalString.unsafelyUnwrapped.count
 ```
+
+## 字符串处理
+
+### 声明字符串
+
+#### 声明多行字符串
+
+```swift
+let numbers = """
+1
+2
+3
+4
+5
+"""
+print("numbers === \(numbers)")
+```
+
+![多行字符串声明定义](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2020_06_04_15_20_52.png)
 
