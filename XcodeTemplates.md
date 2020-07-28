@@ -6,7 +6,7 @@
 
 ~/Library/Developer/Xcode
 
-\```
+```
 
 2. 创建工程时选择下图选项
 
