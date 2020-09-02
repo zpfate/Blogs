@@ -57,14 +57,12 @@ let count = str!.count
 
 #### 隐式解包
 
+在声明的时候使用`!`代表默认始终有值
+
 ```swift
 let str: String! = "abc"
 let count = str.count
 ```
-
-
-
-
 
 
 
@@ -98,6 +96,10 @@ let optionalStringCount = optionalString.unsafelyUnwrapped.count
 
 ### 声明字符串
 
+```swift
+let str: String = "abc"
+```
+
 #### 声明多行字符串
 
 ```swift
@@ -112,4 +114,32 @@ print("numbers === \(numbers)")
 ```
 
 ![多行字符串声明定义](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2020_06_04_15_20_52.png)
+
+#### 字符串插值
+
+类似`NSString StringWithFormat`的占位符用法
+
+```swift
+print("numbers === \(numbers)")
+```
+
+#### Raw String
+
+```swift
+print(#"6 times 7 is \(6 * 7)."#)
+```
+
+运行结果：
+
+![image-20200902201943162](https://i.loli.net/2020/09/02/nSbEWlY1t6PVQTc.png)
+
+在反斜杠后面添加与首尾同等数量的#号， 使插值生效
+
+```
+print(#"6 times 7 is \#(6 * 7)."#)
+```
+
+运行结果：
+
+![image-20200902202244031](https://i.loli.net/2020/09/02/Ake61FoLYXzcEJ5.png)
 
