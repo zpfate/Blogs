@@ -26,6 +26,48 @@ import PlaygroundSupport
 * 运行的时候不知道是不是nil,需要先进行空值判断
 * Objective-C中nil只能对象使用, 不能用在其他地方, 比如数组在查找元素没有找到 使用NSNotFound来标识没有找到
 
+### Optional使用
+
+#### 可选链
+
+```swift
+let str: String? = "abc"
+let count = str?.count
+```
+
+需要注意的是这里获得的`count`也是可选类型
+
+#### Optional绑定
+
+```swift
+let str: String? = "abc"
+if let actualStr = str {
+  let count = actualStr.count
+  print(count)
+}
+```
+
+#### 强制解包
+
+```swift
+let count = str!.count
+```
+
+使用感叹号代表默认`str`是有值的，如果为*nil*，程序会挂掉
+
+#### 隐式解包
+
+```swift
+let str: String! = "abc"
+let count = str.count
+```
+
+
+
+
+
+
+
 ### Optional实现原理
 
 `Optional`是`Swift`标准库里的一个枚举类型
@@ -49,6 +91,8 @@ if let actualOptionalString = optionalString {
 ```swift
 let optionalStringCount = optionalString.unsafelyUnwrapped.count
 ```
+
+
 
 ## 字符串处理
 
