@@ -1,8 +1,15 @@
-简单的设想一下，一次触摸事件，一根手指，一个响应手指触摸的对象。在iOS中，手指触摸屏幕是一个UITouch的对象，而响应手指触摸的对象则是UIResponder。
+### 触摸事件
+
+手指触摸到屏幕会生成一个触摸（UITouch）对象，触摸的目的是生成一个触摸事件（UIEvent）提供给响应者（UIResponder）响应。
+
+### UITouch
+
+* 单个手指触摸屏幕一次，就会生成一个UITouch对象，多个手指同时触摸屏幕则会生成多个UITouch对象
+* 单个手指多次触摸屏幕（类似于双击等操作），系统会根据触摸的位置判断是否更新同一个UITouch对象
 
 ### UIResponder（响应者对象）
 
-首先介绍下UIResponder，在iOS中不是任何对象都能处理事件的，只有继承了UIResponder的对象才能接受并处理事件，称之为响应者对象。老生常谈，打开UIResponder类的官方文档：
+着重介绍下UIResponder，在iOS中不是任何对象都能处理事件的，只有继承了UIResponder的对象才能接受并处理事件，称之为响应者对象。老生常谈，打开UIResponder类的官方文档：
 
 ```objective-c
 // 响应链中下一个响应者
@@ -58,7 +65,10 @@
 
 日常接触到的继承自UIResponder的类有三个:
 
+* APPDelegate
 * UIApplication
-* UIViewController
+* UIVIewController
 * UIView
+
+
 
