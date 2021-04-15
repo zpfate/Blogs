@@ -40,7 +40,7 @@ UIWebView，NSURLConnection， NSURLSession都可以被NSURLProtocol拦截，包
 /// 判断两个请求是否相同，相同的话可以使用缓存数据，一般直接返回父类实现
 + (BOOL)requestIsCacheEquivalent:(NSURLRequest *)a toRequest:(NSURLRequest *)b;
 
-/// 开始加载请求
+/// 开始加载请求，在该方法中发起一个新的请求
 - (void)startLoading;
 
 /// 取消加载请求
@@ -55,7 +55,11 @@ UIWebView，NSURLConnection， NSURLSession都可以被NSURLProtocol拦截，包
 /// 移除给指定的请求的指定key相关联的属性
 + (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
 
+/// 注册该类
++ (BOOL)registerClass:(Class)protocolClass;
 
+/// 取消注册
++ (void)unregisterClass:(Class)protocolClass;
 ```
 
 ##### 使用步骤
@@ -67,12 +71,119 @@ UIWebView，NSURLConnection， NSURLSession都可以被NSURLProtocol拦截，包
 2. 实现抽象类NSURLProtocol的方法
 
    ```objective-c
+   /// 是否接受处理这个请求 返回NO则由URL Loading System使用系统默认的行为处理
+   /// @param request 请求
+   + (BOOL)canInitWithRequest:(NSURLRequest *)request {
+       
+       BOOL shouldAccept;
+       NSURL *url = request.URL;
+       shouldAccept = (request != nil) && (url != nil);
+       
+       if (shouldAccept) {
+           /// 防止递归调用
+           shouldAccept = ![self propertyForKey:TFCusomterProtocolKey inRequest:request];
+       }
+       
+       if (shouldAccept) {
+           NSString *scheme = url.scheme;
+           shouldAccept = [scheme isEqualToString:@"http"];
+       }
+       return shouldAccept;
+   }
    
+   /// 自定义网络请求, 对请求进行修改，如URL重定向、添加Header
+   /// 无需额外处理可直接返回request
+   /// @param request 请求
+   + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request {
+       /// 如果是http请求改成https
+       if ([request.URL.scheme isEqualToString:@"http"]) {
+           NSMutableURLRequest *mutableRequest = [request mutableCopy];
+           NSString *urlString = mutableRequest.URL.absoluteString;
+           urlString = [urlString stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
+           mutableRequest.URL = [NSURL URLWithString:urlString];
+           return mutableRequest;
+       }
+       return request;
+   }
+   
+   /// 此方法抽象类提供了默认实现,重写可以直接调用父类
+   /// 一般不做特殊处理, 直接返回父类实现
+   + (BOOL)requestIsCacheEquivalent:(NSURLRequest *)a toRequest:(NSURLRequest *)b {
+       
+       BOOL result = [super requestIsCacheEquivalent:a toRequest:b];
+       return result;
+   }
+   
+   /// 开始网络请求
+   - (void)startLoading {
+       
+       NSMutableURLRequest *recursiveRequest = [[self request] mutableCopy];
+       [[self class] setProperty:@YES forKey:TFCusomterProtocolKey inRequest:recursiveRequest];
+       
+       NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+       
+       NSMutableArray *protocolClasses = [configuration.protocolClasses mutableCopy];
+       [protocolClasses addObject:self];
+       configuration.protocolClasses = @[self.class];
+       
+       self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+       NSURLSessionDataTask *task = [self.session dataTaskWithRequest:recursiveRequest];
+       [task resume];
+   }
+   
+   /// 停止相应请求
+   - (void)stopLoading {
+       
+       [self.session invalidateAndCancel];
+       self.session = nil;
+   }
    ```
 
    
 
-3. 在网络请求调用之前注册该类
+3. 实现NSURLSessionDataDelegate，当网络请求接收到服务端的响应时，将其通过"NSURLProtocolClient"协议，转发给URL Loading System
+
+   ```objective-c
+   #pragma mark -- NSURLSessionDataDelegate
+   
+   /// 接收到服务响应时调用的方法
+   - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
+       [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowed];
+       
+       completionHandler(NSURLSessionResponseAllow);
+   }
+   
+   ///接收到服务器返回数据的时候会调用该方法，如果数据较大那么该方法可能会调用多次
+   - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+       [[self client] URLProtocol:self didLoadData:data];
+   }
+   
+   /// 当请求完成(成功|失败)的时候会调用该方法，如果请求失败，则error有值
+   - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+       
+       if (error) {
+           [[self client] URLProtocol:self didFailWithError:error];
+       } else {
+           [[self client] URLProtocolDidFinishLoading:self];
+       }
+   }
+   ```
+
+4. 在网络请求调用之前注册该类
+
+   ```objective-c
+   [NSURLProtocol registerClass:self];
+   ```
+
+   
+
+#### 注意事项
+
+对于AFNetworking这种网络库，可以采用hook掉NSURLSessionConfiguration的protocolClasses方法
+
+#### 测试Demo
+
+[NSURLProtocolDemo](https://github.com/zpfate/BlogDemo-iOS/tree/protocol)
 
 ## 参考文档
 
