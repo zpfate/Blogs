@@ -190,3 +190,6 @@ UIWebView，NSURLConnection， NSURLSession都可以被NSURLProtocol拦截，包
 [CustomHTTPProtocol官方Demo](https://developer.apple.com/library/archive/samplecode/CustomHTTPProtocol/Introduction/Intro.html)
 
 [NSURLProtocol 全攻略](https://blog.csdn.net/intheair100/article/details/80888742)
+
+**如有错误，欢迎指正，感谢浏览**
+
