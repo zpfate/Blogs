@@ -79,9 +79,10 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     /// 使用Get.put()实例化你的类，使其对当下的所有子路由可用。
     final CountController controller = Get.put(CountController());
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text("GetX Counter Demo"),
@@ -89,8 +90,12 @@ class Homepage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            ElevatedButton(onPressed: ()=> Get.to(NextPage()), child: Text("Get to NextPage")),
-            Obx(()=> Text("${controller.count}")),
+            ElevatedButton(
+              /// 使用简单的Get.to代替Navigator.push
+                onPressed: ()=> Get.to(()=>NextPage()),
+                child: Text("Get to NextPage")),
+            /// 使用Obx(()=>每当改变计数时，就更新Text()。
+            Obx(()=> Text("clicks:${controller.count}")),
           ],
         ),
       ),
@@ -125,5 +130,4 @@ class NextPage extends StatelessWidget {
 }
 ```
 
-![计数器Demo效果](/Users/twistedfate/Library/Application Support/typora-user-images/image-20210524214148004.png)
-
+GetX计数器Demo
