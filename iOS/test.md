@@ -7,19 +7,37 @@
 3. reserved，保留变量。
 4. invoke，函数指针，指向具体的 block 实现的函数调用地址。
 5. descriptor， 表示该 block 的附加描述信息，主要是 size 大小，以及 copy 和 dispose 函数的指针。
-6. variables，capture 过来的变量，block 能够访问它外部的局部变量，就是因为将这些变量（或变量的地址）复制到了结构体中。
+6. variables，capture捕获 过来的变量，block 能够访问它外部的局部变量，就是因为将这些变量（或变量的地址）复制到了结构体中。
+
+### 变量捕获
+
+![image-20220302170846862](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_02_17_08_47.png)
+
+**auto 默认的变脸申明关键字，与static相对**
+
+![image-20220303092726423](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_09_27_26.png)
+
+![image-20220307135319690](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_07_13_53_20.png)
 
 ### 三种block
 
-1. _NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
-2. _NSConcreteStackBlock 保存在栈中的 block，当函数返回时会被销毁。
-3. _NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
+1. NSGlobalBlock 全局的静态 block，不会访问任何auto变量。
+2. NSStackBlock 保存在栈中的 block，访问了auto变量，当函数返回时会被销毁。
+3. NSMallocBlock 保存在堆中的 block，NSStackBlock调用了copy变成NSMallocBlock， 当引用计数为 0 时会被销毁。
 
-**LLVM在ARC下NSConcreteStackBlock 的 block 会被 NSConcreteMallocBlock 类型的 block 替代，编译器已经默认将block copy到堆区**
+![image-20220303101903412](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_10_19_03.png)
 
 ### __block
 
-在block中无法修改外部变量是因为变量是在申明block时，被复制到block的结构体中，而在变量前加上了__block的关键字，会增加一个结构体保存我们要修改的变量，在使用时引用的是该结构的指针，这样就达到了可以修改外部变量的作用。
+* __block可以用于解决block内部无法修改auto变量值问题__
+* block不能修饰全局变量、静态变量（static）
+* 编译器会将__block变量包装成一个对象
+
+### block循环引用
+
+
+
+
 
 ## KVO相关
 
@@ -37,9 +55,7 @@
 
 ## OC对象
 
-一个NSObject对象实力占16个字节
-
-
+一个NSObject对象实例占16个字节
 
 ![image-20220222100823130](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_02_22_10_08_24.png)
 
