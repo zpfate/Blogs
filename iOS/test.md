@@ -37,11 +37,19 @@
 
 
 
+第83 --- 12.56
+
 
 
 ## KVO相关
 
+Key-Value Observing 键值监听
+
 ### 实现原理
+
+![image-20220314222151383](https://github.com/zpfate/uPic/2022%2003%20141647269033.png)
+
+在程序运行中，动态创建一个NSKVONotifiying_XXX类
 
 
 
@@ -55,7 +63,17 @@
 
 ## OC对象
 
-一个NSObject对象实例占16个字节
+### NSObject
+
+
+
+### class、metaclass
+
+
+
+### isa、superclass
+
+
 
 ![image-20220222100823130](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_02_22_10_08_24.png)
 
