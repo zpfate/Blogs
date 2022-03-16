@@ -33,9 +33,54 @@
 * block不能修饰全局变量、静态变量（static）
 * 编译器会将__block变量包装成一个对象
 
-### block循环引用
 
 
+### block内存管理
+
+* 当block在栈上时，不会对__block变量， 对象类型的auto变量产生强引用
+* 当block被copy到堆时 
+
+   * 会调用到block内部的copy函数
+   * copy函数会调用_Block_object_assign函数
+   * _Block_object_assign函数会对__block变量形成强引用(retain）
+* 当block从堆中移除时
+
+  * 会调用block内部的dispose函数
+  * dispose函数内部会调用_Block_object_dispose函数
+  * _Block_object_dispose函数会自动释放引用的__block变量(release)
+
+
+##### __block修饰对象
+
+* 当__block变量在栈上时，不会对指向的对象产生强引用
+
+* 当__block变量被copy到堆时
+
+  * 会调用__block内部的copy函数
+
+   * copy函数内部会调用_Block_object_assign函数
+
+   * _Block_object_assign函数会根据所指向对象的修饰符（__Strong、__weak、__unsafe_unretained）做出相应操作，形成强引用（retain)或者弱引用 
+
+     **注意 ** 这里仅限于ARC时会retain，MRC时不会retain
+
+* 当__block变量从堆上移除时
+
+   * 会调用__block内部的dispose函数
+   * dispose函数内部会调用_Block_object_dipose函数
+   * _Block_object_dipose函数会自动释放指向的对象（release）
+
+#### 循环引用
+
+##### MRC
+
+* 用__unsafe_unretained id weakSelf = self;
+* 用__block解决
+
+##### ARC
+
+* 用__unsafe_unretained id weakSelf = self;
+* __weak
 
 第83 --- 12.56
 
