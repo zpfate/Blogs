@@ -15,9 +15,11 @@ block本质是一个OC对象，内部也有isa指针，封装了函数调用以�
 
 ![image-20220302170846862](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_02_17_08_47.png)
 
-**auto 默认的变脸申明关键字，与static相对**
+<font color=red>*auto 默认的变量申明关键字，与static相对*</font>
 
-![image-20220303092726423](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_09_27_26.png)
+
+
+![image-20220303092726423](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_09_27_26.png
 
 ![image-20220307135319690](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_07_13_53_20.png)
 
@@ -109,7 +111,7 @@ block本质是一个OC对象，内部也有isa指针，封装了函数调用以�
 
   
 
-  ![image-20220316165156112](../../../../../Users/twistedfate/Library/Application%20Support/typora-user-images/image-20220316165156112.png)
+  ![image-20220316165156112](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1647850786.png)
 
 
 
@@ -218,9 +220,7 @@ Runtime主要由c、c++、汇编来编写
 
 从arm64架构开始，对isa进行了优化，变成了一个共用体（union）结构，还使用位域存储更多信息
 
-![image-20220317140619697](https://github.com/zpfate/uPic/2022%20_03_%2017_1647497517.png)
-
-![image-20220317141212215](https://github.com/zpfate/uPic/2022%20_03_%2017_1647497532.png)
+![image-20220321154521223](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1647848721.png)
 
 
 
