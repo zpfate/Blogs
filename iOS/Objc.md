@@ -222,6 +222,30 @@ Runtime主要由c、c++、汇编来编写
 
 ![image-20220321154521223](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1647848721.png)
 
+### Class的结构
+
+![image-20220324093942864](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648085983.png)
+
+### objc_msgSend
+
+* OC中的方法调用，其实都是转换为objc_msgSend函数的调用
+* objc_msgSend的执行流程可分为三大阶段
+  * 消息发送
+  * 动态方法解析
+  * 消息转发
+
+![image-20220324110152676](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648090913.png)
+
+#### 动态解析
+
+![image-20220324140711722](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648102031.png)
+
+#### 消息转发
+
+NSInvocation封装了一个方法调用，包括了 方法调用者、方法、方法参数
+
+![image-20220324172139395](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648113699.png)
+
 
 
 ## 启动优化
