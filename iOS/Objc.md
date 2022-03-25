@@ -238,7 +238,44 @@ Runtime主要由c、c++、汇编来编写
 
 #### 动态解析
 
-![image-20220324140711722](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648102031.png)
+![image-20220324140711722](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648102031.png "动态解析流程")
+
+```objc
+// 动态方法解析
++ (BOOL)resolveInstanceMethod:(SEL)sel {
+    if (sel == @selector(test)) {
+        Method method = class_getInstanceMethod(self, @selector(instanceTest));
+        class_addMethod(
+                        self,
+                        sel,
+                        method_getImplementation(method),
+                        method_getTypeEncoding(method)
+                        );
+        return YES;
+       
+    }
+    return [super resolveInstanceMethod:sel];
+}
+
++ (BOOL)resolveClassMethod:(SEL)sel {
+    
+    if (sel == @selector(test)) {
+        Method method = class_getClassMethod(self, @selector(classTest));
+        class_addMethod(
+                        object_getClass(self),
+                        sel,
+                        method_getImplementation(method),
+                        method_getTypeEncoding(method)
+                        );
+        return YES;
+    }
+    return [super resolveClassMethod:sel];
+}
+```
+
+![image-20220325101031211](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648174231.png "Objective-C type encodings")
+
+
 
 #### 消息转发
 
@@ -246,7 +283,73 @@ NSInvocation封装了一个方法调用，包括了 方法调用者、方法、�
 
 ![image-20220324172139395](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648113699.png)
 
+```objective-c
+// 消息转发
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+    if (aSelector == @selector(test)) {
+//        return [[Cat alloc] init];
+        return nil;
+    }
+    return [super forwardingTargetForSelector: aSelector];
+}
 
+// 类方法的消息转发
++ (id)forwardingTargetForSelector:(SEL)aSelector {
+    if (aSelector == @selector(test)) {
+//        return [Cat class];
+    }
+    return [super forwardingTargetForSelector:aSelector];
+}
+// 方法签名: 返回值类型 参数类型
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+    if (aSelector == @selector(test)) {
+        Method method = class_getInstanceMethod(object_getClass(self), @selector(instanceTest));
+        return [NSMethodSignature signatureWithObjCTypes:method_getTypeEncoding(method)];
+        // 也可以这么生成方法签名
+        return [[[Cat alloc] init] methodSignatureForSelector:aSelector];
+    }
+    return [super methodSignatureForSelector:aSelector];
+}
+
+
++ (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+    if (aSelector == @selector(test)) {
+        Method method = class_getClassMethod([Cat class], @selector(test));
+        return [NSMethodSignature signatureWithObjCTypes:method_getTypeEncoding(method)];
+        // 也可以这么生成方法签名
+//        return [[[Cat alloc] init] methodSignatureForSelector:aSelector];
+    }
+    return [super methodSignatureForSelector:aSelector];
+}
+// NSInvocation封装了一个方法调用
+// anInvocation.target 方法调用者
+// anInvocation.selector 方法名
+// [anInvocation getArgument:NULL atIndex:0] 方法参数 参数顺序receiver,selector,other
+// [anInvocation getReturnValue:&value]; 获取返回值
+
+- (void)forwardInvocation:(NSInvocation *)anInvocation {
+//    anInvocation.target = [[Cat alloc] init];
+//    [anInvocation invoke];
+    [anInvocation invokeWithTarget:[[Cat alloc] init]];
+}
+
++ (void)forwardInvocation:(NSInvocation *)anInvocation {
+
+    [anInvocation invokeWithTarget:[Cat class]];
+}
+```
+
+
+
+#### super
+
+![image-20220325151039767](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648192240.png)
+
+[super message]底层实现是消息发送的时候，从父类开始寻找方法实现，消息接收者仍然是子类对象。
+
+
+
+121 --- runtime
 
 ## 启动优化
 
