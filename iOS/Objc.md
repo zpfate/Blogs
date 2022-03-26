@@ -339,17 +339,27 @@ NSInvocation封装了一个方法调用，包括了 方法调用者、方法、�
 }
 ```
 
-
-
 #### super
 
 ![image-20220325151039767](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648192240.png)
 
 [super message]底层实现是消息发送的时候，从父类开始寻找方法实现，消息接收者仍然是子类对象。
 
+super底层调用的是objc_msgSendSuper函数
 
+![image-20220326213958881](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648302138.png "super底层调用的是objc_msgSendSuper")
 
-121 --- runtime
+该函数需要传入一个objc_super的结构体
+
+![image-20220326214837125](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648302519.png "objc_super")
+
+最后还是需要看class与superClass方法的内部实现:
+
+![image-20220326220001204](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648303204.png "class和superClass的实现")
+
+#### isKindOfClass、isMemberOfClass
+
+![image-20220326220222191](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648303343.png)
 
 ## 启动优化
 
