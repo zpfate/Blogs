@@ -212,7 +212,9 @@ category的底层结构是_category_t的结构体，所含的方法在运行中�
 
 Objective-C是一门动态性编程语言，动态性由Runtime API支撑
 
-Runtime主要由c、c++、汇编来编写
+Runtime是一套c语言的api，封装了很多动态性相关的函数
+
+平时编写的Objc代码，底层都是转成了Runtime API进行调用
 
 ### isa
 
@@ -359,7 +361,33 @@ super底层调用的是objc_msgSendSuper函数
 
 #### isKindOfClass、isMemberOfClass
 
+两个方法的源码实现如下：
+
 ![image-20220326220222191](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648303343.png)
+
+可以明显的看出，类方法（+方法）会获取元类对象，所以后面比较的也应该是元类对象。
+
+![image-20220328100112973](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648432873.png)
+
+### runtime应用
+
+* 通过runtime找出控件私有成员变量 kvc修改属性
+
+* 字典转模型
+
+* 替换方法， method_swizzling方法交换
+
+* 自动归档解档
+
+* 关联对象添加属性
+
+* 利用消息转发机制解决方法找不到异常管理
+
+  
+
+137-runtime----
+
+
 
 ## 启动优化
 
