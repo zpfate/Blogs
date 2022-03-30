@@ -450,6 +450,50 @@ super底层调用的是objc_msgSendSuper函数
   * UI刷新（BerforeWaiting）
   * AutoRelease Pool（BerforeWaiting）
 
+#### RunLoop运行逻辑
+
+1. 通知Observers：进入Loop
+
+2. 通知Observers：即将处理Timers
+
+3. 通知Observers：即将处理Sources
+
+4. 处理Blocks
+
+5. 处理Source0（可能再次处理Blocks）
+
+6. 如果存在Source1，就跳转到8-3
+
+7. 通知Observers：开始休眠（等待消息唤醒）
+
+8. 通知Observers：结束休眠（被某个消息唤醒）
+
+   > 1. 处理Timer
+   > 2. 处理GCD Async To Main Queue
+   > 3. 处理Source1
+
+9. 处理Blocks
+
+10. 根据前面的执行结果，决定如何操作
+
+    > 1. 回到 2
+    > 2. 退出RunLoop
+
+11. 通知Observers：退出Loop
+
+#### RunLoop休眠的实现原理
+
+![image-20220330163219333](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648629140.png)
+
+#### RunLoop应用
+
+* 控制线程生命周期（线程保活）
+* 解决NSTimer在滑动时停止工作
+* 监控应用卡顿
+* 性能优化
+
+
+
 ## 启动优化
 
 ### 启动过程
