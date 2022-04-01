@@ -509,10 +509,133 @@ super底层调用的是objc_msgSendSuper函数
 
 - <font color = red>并发</font>队列（Concurrent Dispatch Queue）
 
-  > * 可以让多个任务<font color = blue>并发</font>>（<font color = blue>同时</font>>）执行（自动开启多个线程同时执行任务）
+  > * 可以让多个任务<font color = blue>并发</font>（<font color = blue>同时</font>）执行（自动开启多个线程同时执行任务）
   > * 并发功能只有在异步（dispatch_async）函数下有效
 
-160---09
+- <font color = red>串行</font>队列（Serial Dispatch Queue）
+
+  >* 让任务一个接着一个地执行
+  >
+  >
+
+<font color = blue>同步</font>： 在当前线程中执行任务，不具备开启线程的能力
+
+<font color = blue>异步</font>：在新的线程中执行任务，具备开启线程的能力（主队列不开启）
+
+<font color = red>并发</font>：多个任务并发（同时）执行
+
+<font color = red>串行</font>：一个任务执行完毕，再执行下一个任务
+
+**同步和异步主要影响能不能开启新的线程，并发和串行主要影响执行任务的方式**
+
+| --            | 并发队列                                                     | 手动创建的串行队列                                           | 主队列                                                       |
+| ------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 同步（sync）  | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 |
+| 异步（async） | <font color = blue>有</font>开启新线程<br /><font color = red>并发</font>执行任务 | <font color = blue>有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 |
+
+<font color = red>**使用sync函数往当前串行队列中添加任务，会卡住当前的串行**
+
+**队列（产生死锁）**</font>
+
+![image-20220401105327554](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648781608.png)
+
+#### dispatch_group
+
+```objc
+    dispatch_group_t group = dispatch_group_create();
+    // 创建并发队列
+    dispatch_queue_t queue = dispatch_queue_create("group", DISPATCH_QUEUE_CONCURRENT);
+    
+    dispatch_group_async(group, queue, ^{
+        for (int i = 0; i < 5; i++) {
+            NSLog(@"任务1---%@", [NSThread currentThread]);
+        }
+    });
+    dispatch_group_async(group, queue, ^{
+        for (int i = 0; i < 5; i++) {
+            NSLog(@"任务2---%@", [NSThread currentThread]);
+        }
+    });
+    
+    // 等前面的任务执行完毕后,自动执行
+//    dispatch_group_notify(group, queue, ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            for (int i = 0; i < 5; i++) {
+//                NSLog(@"任务2---%@", [NSThread currentThread]);
+//            }
+//        });
+//    });
+    
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+            for (int i = 0; i < 5; i++) {
+                NSLog(@"任务3---%@", [NSThread currentThread]);
+            }
+    });
+```
+
+### iOS线程同步方案
+
+* OSSpinLock
+* os_unfair_lock
+* Pthread_mutex
+* dispatch_semaphore
+* dispatch_quequ(DISPATCH_QUEUE_SERIAL)
+* NSLock
+* NSCondition
+* NSConditionLock
+* @synchronized
+
+#### OSSpinLock自旋锁
+
+等待锁的线程会出于忙等（busy-wait)状态，一直占用着CPU资源。
+
+目前已经不安全，不建议使用，会造成优先级反转
+
+<font color = red>**OSSpinLock已经不建议使用，iOS10.0之后建议使用os_unfair_lock**</font>
+
+> 如果等待锁的线程优先级比较高，它会一直占用CPU资源，优先级低的线程就无法释放锁
+
+##### 使用
+
+需要\#import <libkern/OSAtomic.h>
+
+```objc
+ // 初始化
+ OSSpinLock _lock = OS_SPINLOCK_INIT;
+ // 尝试加锁(如果需要等待就不加锁,直接返回false;如果不需要等待就加锁,返回true)
+ bool result = OSSpinLockTry(&_lock);
+ // 加锁
+ OSSpinLockLock(&_lock);
+ // 解锁
+ OSSpinLockUnlock(&_lock);
+```
+
+#### os_unfair_lock
+
+* os_unfair_lock用于取代不安全的OSSpinLock，从iOS10开始才支持
+
+* 从底层调用看，等待os_unfair_lock锁的线程处于休眠状态，并非忙等
+
+##### 使用
+
+需要\#import <os/lock.h>
+
+```objc
+ // 初始化
+  os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+  // 尝试加锁
+  bool result = os_unfair_lock_trylock(&lock);
+  // 加锁
+  os_unfair_lock_lock(&lock);
+  // 解锁
+  os_unfair_lock_lock(&lock);
+```
+
+
+
+174-06:00
+
+
 
 ## 启动优化
 
