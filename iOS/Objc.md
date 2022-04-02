@@ -434,7 +434,7 @@ super底层调用的是objc_msgSendSuper函数
   * KCFRunLoopDefaultMode（NSDefaultRunLoopMode）：App的默认Mode，通常主线程在该Mode下运行
   * UITrackingRunLoopMode:界面跟踪Mode，用于ScrollView追踪触摸滑动，保证页面滑动时不受其他Mode影响
 
-#### RunLoop运行的逻辑
+#### RunLoop处理事件
 
 * Source0
   * 触摸事件处理
@@ -585,7 +585,7 @@ super底层调用的是objc_msgSendSuper函数
 * NSConditionLock
 * @synchronized
 
-#### OSSpinLock自旋锁
+#### OSSpinLock 自旋锁
 
 等待锁的线程会出于忙等（busy-wait)状态，一直占用着CPU资源。
 
@@ -610,7 +610,7 @@ super底层调用的是objc_msgSendSuper函数
  OSSpinLockUnlock(&_lock);
 ```
 
-#### os_unfair_lock
+#### os_unfair_lock 互斥锁
 
 * os_unfair_lock用于取代不安全的OSSpinLock，从iOS10开始才支持
 
@@ -628,12 +628,50 @@ super底层调用的是objc_msgSendSuper函数
   // 加锁
   os_unfair_lock_lock(&lock);
   // 解锁
-  os_unfair_lock_lock(&lock);
+  os_unfair_lock_unlock(&lock);
 ```
 
+#### pthread_mutex（跨平台）
+
+* mutex叫做"互斥锁"，等待锁的线程会处于休眠状态
+
+##### 使用
+
+需要#import <pthread.h>
+
+![image-20220402101501432](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648865702.png)
+
+```objc
+    // 静态初始化
+//        pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
+    /**
+     #define PTHREAD_MUTEX_NORMAL        0
+     #define PTHREAD_MUTEX_ERRORCHECK    1
+     #define PTHREAD_MUTEX_RECURSIVE        2 递归锁
+     #define PTHREAD_MUTEX_DEFAULT        PTHREAD_MUTEX_NORMAL 普通的锁
+     */
+    
+    // 初始化锁的属性
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    // 锁的类型
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_DEFAULT);
+    // 初始化锁
+    pthread_mutex_t _mutex;
+    pthread_mutex_init(&_mutex, &attr);
+    // 销毁属性
+    pthread_mutexattr_destroy(&attr);
+   // 加锁
+    pthread_mutex_lock(&_mutex);
+    // 解锁
+    pthread_mutex_unlock(&_mutex);
+    // 销毁锁
+    pthread_mutex_destroy(&_mutex);
+```
+
+**递归锁** 允许<font color = red>同一个线程</font>对一把锁重复加锁
 
 
-174-06:00
 
 
 
