@@ -541,7 +541,7 @@ super底层调用的是objc_msgSendSuper函数
 
 #### dispatch_group
 
-```objc
+```objective-c
     dispatch_group_t group = dispatch_group_create();
     // 创建并发队列
     dispatch_queue_t queue = dispatch_queue_create("group", DISPATCH_QUEUE_CONCURRENT);
@@ -620,7 +620,7 @@ super底层调用的是objc_msgSendSuper函数
 
 需要\#import <os/lock.h>
 
-```objc
+```objective-c
  // 初始化
   os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
   // 尝试加锁
@@ -641,7 +641,7 @@ super底层调用的是objc_msgSendSuper函数
 
 ![image-20220402101501432](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648865702.png)
 
-```objc
+```objective-c
     // 静态初始化
 //        pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
     /**
@@ -671,7 +671,7 @@ super底层调用的是objc_msgSendSuper函数
 
 **递归锁** 允许<font color = red>同一个线程</font>对一把锁重复加锁
 
-### NSLock、NSRecursiveLock
+#### NSLock、NSRecursiveLock
 
 * NSLock就是对mutex普通锁的封装
 * NSRecursiveLock是对mutex递归锁的封装
@@ -690,19 +690,36 @@ super底层调用的是objc_msgSendSuper函数
     lock lockBeforeDate:<#(nonnull NSDate *)#>
 ```
 
-### NSCondition
+#### NSCondition
 
 * NSConditionLock是对mutex和cond条件锁的封装
 
-### NSConditionLock
+```objective-c
+    // 初始化
+    NSCondition *condition = [[NSCondition alloc] init];
+    // 加锁
+    [condition lock];
+    // 等待
+    [condition wait];
+    // 通知
+    [condition signal];
+    // 广播
+    [condition broadcast];
+    // 解锁
+    [condition unlock];
+```
+
+
+
+#### NSConditionLock
 
 * 是对NSCondition的进一步封装
 * 可以设置条件的值
 
-```objc
-   // 初始化
+```objective-c
+   // 初始化 默认condition为0
     NSConditionLock *conditionLock = [[NSConditionLock alloc] initWithCondition:1];
-    // 加锁
+    // 加锁 直接加锁 不管condition的值
     [conditionLock lock];
     // 符合条件加锁
     [conditionLock lockWhenCondition:1];
@@ -711,6 +728,121 @@ super底层调用的是objc_msgSendSuper函数
     // 符合条件解锁
     [conditionLock unlockWithCondition:1];
 ```
+
+#### dispatch_queue
+
+* 直接使用GCD的串行队列，也是可以实现线程同步的
+
+```objective-c
+// 创建队列
+dispatch_quue_t queue = dispatch_queue_create("ticket", 
+DISPATCH_QUEUE_SERIAL);
+// 同步执行
+dispatch_sync(queue, ^{
+    [super _saveMoney];
+});
+```
+
+#### dispatch_semaphore
+
+* semaphore叫做信号量
+* 信号量的初始值 可以用来控制线程并发访问的最大数量
+
+```objective-c
+// 信号量初始值
+int value = 1;
+// 初始化信号量
+dispatch_semaphore_t semaphore = dispatch_semaphore_create(value);
+// 如果信号量的值<=0,当前线程就会进入休眠等待(直到信号量的值>0)
+// 如果信号的值>0,就减一,然后往下执行代码
+dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+// 让信号量的值-1
+dispatch_semaphore_signal(semaphore);
+```
+
+#### @synchronized
+
+* <font color = red>@synchronized</font>是对mutex递归锁的封装
+
+* 源码查看objc-sync.mm
+
+### iOS线程同步方案性能比较
+
+1. os_unfair_lock
+2. OSSpinLock
+3. dispatch_semaphore
+4. pthread_mutex
+5. dispatch_queue
+6. NSLock
+7. NSCondition
+8. pthread_mutex（recursive）
+9. NSRecursiveLock
+10. NSConditionLock
+11. @synchronized
+
+#### 自旋锁、互斥锁比较
+
+什么情况下使用自旋锁比较划算？
+
+* 预计线程等待锁的时间很短
+* 加锁的代码（临界区）经常被调用，但竞争情况很少发生
+* CPU资源不紧张
+* 多核处理器
+
+什么情况使用互斥锁比较划算？
+
+* 预计线程等待锁的时间比较长
+* 单核处理器
+* 临界区有IO操作
+* 代码比较复杂，或者循环量大
+* 临界区竞争非常激烈
+
+### atomic
+
+* <font color = red>atomic</font>用于保证属性setter、getter的原子性操作，相当于在getter和setter内部加了线程同步的锁
+* 可以参考源码objc4的objc-accessors.m
+* 它并不能保证使用属性的过程是线程安全的（比如集合的操作）
+
+### 读写安全
+
+* 同一时间单写多读
+* 同一时间不允许既有写的操作，又有读的操作
+
+#### 实现方案
+
+* pthread_rwlock: 读写锁
+* dispatch_barrier_async:异步栅栏调用
+
+#### pthread_rwlock
+
+使用需要#import <pthread.h>
+
+```objective-c
+- (void)initLock {
+  // 初始化
+  pthread_rwlock_init(&_lock, NULL);
+}
+
+- (void)read {
+    // 加锁
+    pthread_rwlock_rdlock(&_lock);
+
+    NSLog(@"%s", __func__);
+    pthread_rwlock_unlock(&_lock);
+}
+
+- (void)write {
+    // 加锁
+    pthread_rwlock_wrlock(&_lock);
+    NSLog(@"%s", __func__);
+    // 解锁
+    pthread_rwlock_unlock(&_lock);
+}
+```
+
+
+
+#### dispatch_barrier_async
 
 
 
