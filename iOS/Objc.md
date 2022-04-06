@@ -671,7 +671,46 @@ super底层调用的是objc_msgSendSuper函数
 
 **递归锁** 允许<font color = red>同一个线程</font>对一把锁重复加锁
 
+### NSLock、NSRecursiveLock
 
+* NSLock就是对mutex普通锁的封装
+* NSRecursiveLock是对mutex递归锁的封装
+
+```objective-c
+  // 初始化
+    NSLock *lock = [[NSLock alloc] init];
+    // 尝试加锁
+    [lock tryLock];
+    // 加锁
+    [lock lock];
+    // 解锁
+    [lock unlock];
+    // 在传入时间到来前加锁,时间没到就休眠,时间到了加锁,
+    // 加锁成功就返回YES,加锁失败或超出时间就返回NO
+    lock lockBeforeDate:<#(nonnull NSDate *)#>
+```
+
+### NSCondition
+
+* NSConditionLock是对mutex和cond条件锁的封装
+
+### NSConditionLock
+
+* 是对NSCondition的进一步封装
+* 可以设置条件的值
+
+```objc
+   // 初始化
+    NSConditionLock *conditionLock = [[NSConditionLock alloc] initWithCondition:1];
+    // 加锁
+    [conditionLock lock];
+    // 符合条件加锁
+    [conditionLock lockWhenCondition:1];
+    // 解锁
+    [conditionLock unlock];
+    // 符合条件解锁
+    [conditionLock unlockWithCondition:1];
+```
 
 
 
