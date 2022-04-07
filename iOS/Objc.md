@@ -858,6 +858,81 @@ dispatch_semaphore_signal(semaphore);
 
 ## 内存管理
 
+### CADisplayLink
+
+```objective-c
+self.link = [CADisplayLink displayLinkWithTarget:[TFProxy proxyWithTarget:self] selector:@selector(linkTest)];
+    [self.link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+```
+
+### NSTimer
+
+NSTimer依赖于RunLoop，如果RunLoop任务过于繁重，定时器可能不准时
+
+```objective-c
+self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:[TFProxy proxyWithTarget:self] selector:@selector(timerTest) userInfo:nil repeats:YES];
+```
+
+### NSProxy
+
+* 继承自NSProxy的类大部分方法都会走消息转发
+* 消息转发的效率更高
+
+头文件
+
+```objective-c
+@interface TFProxy : NSProxy
+@property (nonatomic, weak) id target;
+
++ (instancetype)proxyWithTarget:(id)target;
+
+@end
+```
+
+实现
+
+```objective-c
+@implementation TFProxy
+
++ (instancetype)proxyWithTarget:(id)target {
+    TFProxy *proxy = [TFProxy alloc];
+    proxy.target = target;
+    return proxy;
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+    return self.target;
+}
+
+@end
+```
+
+### GCD定时器
+
+GCD定时器更加准确，依赖于系统内核
+
+```objective-c
+   // 队列
+    dispatch_queue_t queue = dispatch_get_main_queue();
+    // 创建GCD定时器
+    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    
+    // 设置时间
+    NSTimeInterval start = 2.0; // 2s后开始执行
+    NSTimeInterval interval = 1.0; // 每隔1s执行
+    // 纳秒
+    dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, start * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0);
+    
+    // 设置回调
+    dispatch_source_set_event_handler(timer, ^{
+        NSLog(@"-----");
+    });
+		// 销毁
+    dispatch_resume(timer);
+```
+
+
+
 
 
 
