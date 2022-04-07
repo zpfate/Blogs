@@ -840,11 +840,27 @@ dispatch_semaphore_signal(semaphore);
 }
 ```
 
-
-
 #### dispatch_barrier_async
 
-192 --- 02:06
+* 这个函数传入的并发队列必须是自己通过dispatch_queue_create创建的
+* 如果传入的是一个串行或是一个全局并发队列，那这个函数变等同于dispatch_async的效果
+
+```objective-c
+    dispatch_queue_t queue = dispatch_queue_create("rw", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(queue, ^{
+       // 读
+        [self read];
+    });
+    dispatch_barrier_async(queue, ^{
+        [self write];  // 写
+    });
+```
+
+## 内存管理
+
+
+
+
 
 ## 启动优化
 
