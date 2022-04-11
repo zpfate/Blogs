@@ -931,7 +931,39 @@ GCD定时器更加准确，依赖于系统内核
     dispatch_resume(timer);
 ```
 
+## 内存管理
 
+### iOS内存布局
+
+![image-20220408101744432](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649384265.png)
+
+### Tagged Pointer
+
+* 从64bit开始，iOS引入了Tagged Pointer技术，用于优化NSNumber，NSDate，NSString等小对象的存储
+* 在没有使用Tagged Pointer之前，NSNumber等对象需要动态分配内存，维护引用计数等，NSNumber指针存储的是堆中NSNumber对象的地址值。
+* 使用Tagged Pointer之后，NSNumber指针里面存储的数据变成了：Tag + Data，也就是将数据直接存储在了指针中
+* 当指针不够存储数据时，才会使用动态分配内存的方式来存储数据
+* objc_msgSend能识别到Tagged Pointer，比如NSNumber的intValue方法，直接从指针提取数据，节省了以前的调用开销。
+* 在mac平台最低有效位是1就是Tagged Pointer，iOS平台为1UL<<63，最高有效位是1
+
+### 内存管理
+
+* iOS中使用引用计数来管理OC对象的内存
+* 引用计数储存在isa指针中或者SideTable中
+
+
+
+### copy和mutableCopy
+
+1. copy 不可变拷贝， 产生不可变副本
+2. mutableCopy可变拷贝，产生可变副本
+
+|             | NSString                                             | NSMutableString                                      | NSArray                                             | NSMutableArray                                      | NSDictionary                                             | NSMutableDictionary                                      |
+| ----------- | ---------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| copy        | NSString<br /><font color = green>浅拷贝</font>      | NSString<br /><font color = red>深拷贝</font>        | NSArray<br /><font color = green>浅拷贝</font>      | NSArray<br /><font color = red>深拷贝</font>        | NSDictionary<br /><font color = green>浅拷贝</font>      | NSDictionary<br /><font color = red>深拷贝</font>        |
+| mutableCopy | NSMutableString<br /><font color = red>深拷贝</font> | NSMutableString<br /><font color = red>深拷贝</font> | NSMutableArray<br /><font color = red>深拷贝</font> | NSMutableArray<br /><font color = red>深拷贝</font> | NSMutableDictionary<br /><font color = red>深拷贝</font> | NSMutableDictionary<br /><font color = red>深拷贝</font> |
+
+### weak
 
 
 
