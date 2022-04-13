@@ -948,10 +948,9 @@ GCD定时器更加准确，依赖于系统内核
 
 ### 内存管理
 
-* iOS中使用引用计数来管理OC对象的内存
-* 引用计数储存在isa指针中或者SideTable中
-
-
+* iOS中使用引用计数来管理OC对象的内存，引用计数储存在isa指针中或者SideTable中
+* 一个新建的OC对象引用计数默认是1，当引用计数减为0，OC对象就会销毁，释放其占用的内存空间
+* 调用retain会让OC对象的引用计数+1，调用release会让OC对象的引用计数-1
 
 ### copy和mutableCopy
 
@@ -965,15 +964,133 @@ GCD定时器更加准确，依赖于系统内核
 
 ### weak
 
+weak是弱引用，用weak来修饰的引用对象的计数器不会增加，而且weak会在引用对象释放的时候，自动置为nil
 
+#### 当 weak 指向的对象被释放时，如何让 weak 指针置为 nil 的呢
 
+* 调用 objc_release
+* 因为对象的引用计数为0，所以执行 dealloc
+* 在 dealloc 中，调用了 _objc_rootDealloc 函数
+* 在 _objc_rootDealloc 中，调用了 object_dispose 函数
+* 调用 objc_destructInstance
+* 最后调用 objc_clear_deallocating,详细过程如下：
+  a. 从 weak 表中获取废弃对象的地址为键值的记录
+  b. 将包含在记录中的所有附有 weak 修饰符变量的地址，赋值为 nil
+  c. 将 weak 表中该记录删除
+  d. 从引用计数表中删除废弃对象的地址为键值的记录
 
+### AutoRelease
+
+* 自动释放池的主要底层数据结构是：__AutoReleasePool，AutoReleasePoolPage
+* 调用了autorelease的对象最终都是通过AutoReleasePoolPage
+* 每个AutoReleasePoolPage对象占用4096字节内存，除了用来存放他内部的成员变量，剩下的空间用来存放autorelease对象的地址
+* 所有的AutoReleasePoolPage对象是通过双向链表的形式连接在一起
+
+#### AutoReleasePoolPage的结构
+
+* 调用push方法会将一个POOL_BOUNDARY入栈，并且会返回其存放的内存地址
+* 调用pop放时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送release消息，知道遇到这个POOL_BOUNDARY
+* id *next指向了下一个能存放autorelease对象地址的区域
+
+#### RunLoop和AutoRelease
+
+iOS在主线程的RunLoop注册了2个Observer
+
+* 第一个Observer监听了KCFRunLoopEntry事件，会调用objc_autoreleasePoolPush()
+
+* 第二个Observer监听了KCFRunLoopBeforeWaiting事件，会调用objc_autoreleasePoolPop()、objc_autoreleasePoolPush()，监听了KCFRunLoopBeforeExit事件，会调用objc_autoreleasePoolPop()
+
+释放是由RunLoop来控制的
+
+## 性能优化
+
+### CPU和GPU
+
+![image-20220413153848554](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841056.png)
+
+### 卡顿优化-CPU
+
+![image-20220413154742051](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841048.png)
+
+### 卡顿优化-GPU
+
+![image-20220413160647442](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841046.png)
+
+### 离屏渲染
+
+![image-20220413161034602](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841042.png)
+
+### 卡顿检测
+
+* 平时所说的卡顿 主要是因为主线程执行了比较耗时的操作
+* 可以添加Observer到主线程RunLoop中，通过监听RunLoop状态切换的耗时，以达到监控卡顿的目的
+
+### 耗电优化
+
+![image-20220413161634558](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841040.png)
+
+![image-20220413164049114](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841037.png)
+
+![image-20220413164351339](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841032.png)
 
 ## 启动优化
 
-### 启动过程
+### 启动方式
 
-#### 1. pre-main阶段
+* 冷启动：从零开始启动APP
+* 热启动：APP已经存在内存中，在后台存活着，再次启动APP
 
-* 加载应用的可执行文件
-* 加载动态连接器dyld
+### APP的启动
+
+APP启动可以分成三大阶段
+
+* dyld
+* runtime
+* main
+
+#### dyld
+
+* Apple的动态链接器，可以用来装载Mach-O文件（可执行文件，动态库等）
+* 启动APP时，dyld所做的事情有
+  * 装载APP的可执行文件，同时会递归加载所有依赖的动态库
+  * 当dyld把可执行文件、动态库都装载完毕后，会通知Runtime进行下一步处理
+
+#### Runtime
+
+启动APP时，Runtime所做的事情：
+
+> * 使用map_images进行可执行文件内容的解析和处理
+> * 在load_images中调用call_load_methods，调用所有Class和Category的+load方法
+> * 进行各种objc结构的初始化（注册Objc类、初始化类对象等等）
+> * 调用c++静态初始化器和\_\_attribute_((constructor))修饰的函数
+
+到此为止，可执行文件和动态库中的所有符号（Class、Protocol、Selector、IMP、...）都已经按格式成功加载到内存中，被runtime所管理
+
+#### main
+
+![image-20220413165822177](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841027.png)
+
+总结一下：
+
+>APP的启动由dyld住到
+>
+>
+
+### 启动优化
+
+![image-20220413170106569](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841021.png)
+
+
+
+## 应用瘦身
+
+![image-20220413170702762](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841015.png)
+
+![image-20220413170916344](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841004.png)
+
+## 设计模式
+
+### MVC
+
+* 优点是View、Model可以复用
+* Controller随着版本的迭代过于臃肿
