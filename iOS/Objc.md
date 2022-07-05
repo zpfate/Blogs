@@ -9,7 +9,7 @@ block本质是一个OC对象，内部也有isa指针，封装了函数调用以�
 3. reserved，保留变量。
 4. invoke，函数指针，指向具体的 block 实现的函数调用地址。
 5. descriptor， 表示该 block 的附加描述信息，主要是 size 大小，以及 copy 和 dispose 函数的指针。
-6. variables，capture捕获 过来的变量，block 能够访问它外部的局部变量，就是因为将这些变量（或变量的地址）复制到了结构体中。
+6. variables，capture捕获过来的变量，block 能够访问它外部的局部变量，就是因为将这些变量（或变量的地址）复制到了结构体中。
 
 ### 变量捕获
 
@@ -32,7 +32,7 @@ block本质是一个OC对象，内部也有isa指针，封装了函数调用以�
 ### __block
 
 * \_\_block可以用于解决block内部无法修改auto变量值问题__
-* block不能修饰全局变量、静态变量（static）
+* __block不能修饰全局变量、静态变量（static）
 * 编译器会将__block变量包装成一个对象
 
 ### 修饰词用copy
@@ -41,7 +41,7 @@ block本质是一个OC对象，内部也有isa指针，封装了函数调用以�
 
 ### block内存管理
 
-* 当block在栈上时，不会对__block变量， 对象类型的auto变量产生强引用
+* 当block在栈上时，不会对__block变、对象类型的auto变量产生强引用
 * 当block被copy到堆时 
 
    * 会调用到block内部的copy函数
@@ -390,13 +390,13 @@ super底层调用的是objc_msgSendSuper函数
 * Core Foundation ： CFRunLoopRef
 
 ```objc
-  // 当前线程的Runloop
-    NSRunLoop *currentRunloop = [NSRunLoop currentRunLoop];
-    CFRunLoopRef currentRunloopRef = CFRunLoopGetCurrent();
+// 当前线程的Runloop
+NSRunLoop *currentRunloop = [NSRunLoop currentRunLoop];
+CFRunLoopRef currentRunloopRef = CFRunLoopGetCurrent();
 
-    // 主线程的Runloop
-    NSRunLoop *mainRunloop = [NSRunLoop currentRunLoop];
-    CFRunLoopRef mainloopRef = CFRunLoopGetMain();
+// 主线程的Runloop
+NSRunLoop *mainRunloop = [NSRunLoop currentRunLoop];
+CFRunLoopRef mainloopRef = CFRunLoopGetMain();
 ```
 
 ![image-20220329135324877](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648533205.png "两者关联")
@@ -430,7 +430,7 @@ super底层调用的是objc_msgSendSuper函数
 * 如果Mode里没有任何Source0/Source1/Timer/Observer，RunLoop会立马退出
 * 常见的两种Mode
   * KCFRunLoopDefaultMode（NSDefaultRunLoopMode）：App的默认Mode，通常主线程在该Mode下运行
-  * UITrackingRunLoopMode:界面跟踪Mode，用于ScrollView追踪触摸滑动，保证页面滑动时不受其他Mode影响
+  * UITrackingRunLoopMode：界面跟踪Mode，用于ScrollView追踪触摸滑动，保证页面滑动时不受其他Mode影响
 
 #### RunLoop处理事件
 
@@ -439,7 +439,7 @@ super底层调用的是objc_msgSendSuper函数
   * performSelector:onThread:
 * Source1 
   * 基于Port的线程间通信
-  * 系统事件捕捉（Source1捕捉包装成Source1处理）
+  * 系统事件捕捉（Source1捕捉包装成Source0处理）
 * Timers
   * NSTimer
   * performSelector: withObject: afterDelay:
@@ -987,7 +987,7 @@ weak是弱引用，用weak来修饰的引用对象的计数器不会增加，而
 #### AutoReleasePoolPage的结构
 
 * 调用push方法会将一个POOL_BOUNDARY入栈，并且会返回其存放的内存地址
-* 调用pop放时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送release消息，知道遇到这个POOL_BOUNDARY
+* 调用pop放时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送release消息，直到遇到这个POOL_BOUNDARY
 * id *next指向了下一个能存放autorelease对象地址的区域
 
 #### RunLoop和AutoRelease
@@ -1066,19 +1066,16 @@ APP启动可以分成三大阶段
 
 #### main
 
-![image-20220413165822177](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841027.png)
-
 总结一下：
 
->APP的启动由dyld住到
->
->
+>* APP的启动由dyld主导，将可执行文件加载到内存，顺便加载所有的依赖库
+>* 并由runtime负责加载成objc定义的结构
+>* 所有初始化工作完成结束后，dyld就会调用main函数
+>* 接下来就是UIApplication函数，didFinishLaunchingWithOptions:
 
 ### 启动优化
 
 ![image-20220413170106569](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841021.png)
-
-
 
 ## 应用瘦身
 
@@ -1092,8 +1089,6 @@ APP启动可以分成三大阶段
 
 * 优点是View、Model可以复用
 * Controller随着版本的迭代过于臃肿
-
-
 
 ## 推荐
 
