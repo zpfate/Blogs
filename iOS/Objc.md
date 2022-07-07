@@ -1079,6 +1079,18 @@ APP启动可以分成三大阶段
 
 ## 应用瘦身
 
+* 资源
+
+  对资源进行无损的压缩，比如使用webp格式图片
+
+  去除没有用到的资源： https://github.com/tinymind/LSUnusedResources 
+
+* 可执行文件
+
+  编译器优化：Strip Linked Product、Make Strings Read-Only、Symbols Hidden by Default 设置为 YES，去掉异常支持，Enable C++ Exceptions、Enable Objective-C Exceptions 设置为 NO， Other C Flags 添加 -fno-exceptions 
+
+  利用 AppCode 检测未使用的代码：菜单栏 -> Code -> Inspect Code
+
 ![image-20220413170702762](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841015.png)
 
 ![image-20220413170916344](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1649841004.png)
