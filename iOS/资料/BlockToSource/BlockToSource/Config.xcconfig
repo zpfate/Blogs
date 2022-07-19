@@ -1,0 +1,9 @@
+VERBOSE_SCRIPT_LOGGING=-v
+MACH_PATH=${BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/${PRODUCT_NAME}
+
+
+CMD =  pushd "${SRCROOT}/BlockToSource";xcrun -sdk iphonesimulator clang -S -rewrite-objc -fobjc-arc -fobjc-runtime=ios-14.4 "${SRCROOT}/BlockToSource/main.m";open main.cpp;popd
+
+TTY=/dev/ttys001
+
+
