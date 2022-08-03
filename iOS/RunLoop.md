@@ -68,7 +68,7 @@ CFRunLoopRef mainloopRef = CFRunLoopGetMain();
 
 #### RunLoop运行逻辑
 
-![RunLoop_1](https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_1.png)
+![RunLoop_1](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1658471907.png)
 
 1. 通知Observers：进入Loop
 
