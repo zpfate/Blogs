@@ -12,3 +12,12 @@ flutter底层图像渲染引擎， Skia是一款用c++开发的 2D图形绘制�
 * 用有其他优秀编程语言的诸多特性，学习成本低，易上手
 * 性能表现出色，避免了抢占式调度和共享内存，可以在没有锁的情况下进行对象分配和垃圾回收
 
+
+
+## setState
+
+![image-20221117161345708](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1668672826.png)
+
+![image-20221117161428295](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1668672868.png)
+
+![image-20221117161508003](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1668672908.png)
