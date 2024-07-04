@@ -1,5 +1,7 @@
 # 单线程模型
 
+
+
 ## Event Loop机制
 
 Dart是单线程的，**单线程和异步不冲突**。
@@ -158,5 +160,7 @@ main() async => print(await asyncFactoriali(4));// 等待并发计算阶乘结�
 
 
 
-## 
+## 参考
+
+[陈航 Flutter技术核心与实战]()
 
