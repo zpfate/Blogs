@@ -143,3 +143,20 @@ print(#"6 times 7 is \#(6 * 7)."#)
 
 ![image-20200902202244031](https://i.loli.net/2020/09/02/Ake61FoLYXzcEJ5.png)
 
+## 注释
+
+swift支持注释嵌套
+
+swift Playground注释支持markup语法 与markdown相似
+
+```
+单行注释 
+//:开启markup
+多行注释
+/*:
+开启markup
+*/
+```
+
+点击上方菜单Editor ->show Rendered
+

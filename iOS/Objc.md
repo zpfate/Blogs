@@ -626,7 +626,7 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:[TFProxy proxyWi
 
 GCD定时器更加准确，依赖于系统内核
 
-```objective-c
+```objc
    // 队列
     dispatch_queue_t queue = dispatch_get_main_queue();
     // 创建GCD定时器
