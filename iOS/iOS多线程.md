@@ -39,7 +39,7 @@
 | 同步（sync）  | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 |
 | 异步（async） | <font color = blue>有</font>开启新线程<br /><font color = red>并发</font>执行任务 | <font color = blue>有</font>开启新线程<br /><font color = green>串行</font>执行任务 | <font color = yellow>没有</font>开启新线程<br /><font color = green>串行</font>执行任务 |
 
-<font color = red>**使用sync函数往当前串行队列中添加任务，会卡住当前的串行**
+<font color = red>**使用sync函数往当前串行队列中添加任务，会卡住当前的串行**</font>
 
 **队列（产生死锁）**</font>
 
