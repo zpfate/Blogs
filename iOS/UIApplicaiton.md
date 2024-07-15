@@ -61,13 +61,13 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 
   
 
-  事实上，当你在Appdelegate中的window调用`makeKeyAndVisible`方法之前打印keyWindow，会发现为`null`，一个window只需要调用`makeKeyAndVisible`方法就可以成为keyWindow。已经废弃的UIAlertView在展示的时候keyWindow也会发生变化，如下所示：
+  事实上，当你在`Appdelegate`中的`window`调用`makeKeyAndVisible`方法之前打印`keyWindow`，会发现为`null`，一个window只需要调用`makeKeyAndVisible`方法就可以成为`keyWindow`。已经废弃的`UIAlertView`在展示的时候`keyWindow`也会发生变化，如下所示：
 
   ![AlertView的keyWindow](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/image-2020040809112985320200408093931.png)
 
-  所以keyWindow有可能是会改变的，但是同一时间只会有一个UIWindow是keyWindow
+  所以`keyWindow`有可能是会改变的，但是同一时间只会有一个`UIWindow`是`keyWindow`
 
-  UIWindow是根据UIWindowLevel来进行排序的，level高的将排在所有比他低的层级前面，keyWindow显示在相同级别的最上层。
+  `UIWindow`是根据`UIWindowLevel`来进行排序的，`level`高的将排在所有比他低的层级前面，`keyWindow`显示在相同级别的最上层。
 
   
 
@@ -89,10 +89,10 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 
 #### 控制和处理事件
 
-- \- sendEvent: 将事件调度到 app 中的相应响应者对象
-- \- sendAction:to:from:forEvent: : 将选择器识别的动作消息发送到指定目标
-- \- beginIgnoringInteractionEvents : 告知接收者暂停处理触摸事件
-- \- endIgnoringInteractionEvents : 告知接收者恢复相关事件的处理
+- sendEvent: 将事件调度到 app 中的相应响应者对象
+- sendAction:to:from:forEvent: : 将选择器识别的动作消息发送到指定目标
+- beginIgnoringInteractionEvents : 告知接收者暂停处理触摸事件
+- endIgnoringInteractionEvents : 告知接收者恢复相关事件的处理
 - ignoringInteractionEvents : 一个布尔值, 指示接收者是否忽略由触摸在屏幕上启动的事件
 - applicationSupportsShakeToEdit : 一个布尔值,用于确定摇动设备是否显示撤销重做用户界面
 
@@ -119,8 +119,6 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 * beginBackgroundTaskWithExpirationHandler : 标记着一个新的长期运行的后台任务的开始.
 
 * endBackgroundTask : 标记特定长时间运行的后台任务结束.
-
-
 
 
 

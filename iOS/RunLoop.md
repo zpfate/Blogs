@@ -21,11 +21,11 @@ CFRunLoopRef mainloopRef = CFRunLoopGetMain();
 
 ### RunLoop与线程
 
-* 每一个线程都有唯一的一个与之对应的RunLoop对象
-* RunLoop保存在一个全局的Dictionary里面，线程作为key，RunLoop作为value
-* 线程刚创建的时候没有RunLoop，在第一次获取的时候创建
-* RunLoop在线程结束时销毁
-* 主线程的RunLoop已经自动获取创建，子线程默认没有开启RunLoop
+* 每一个线程都有唯一的一个与之对应的`RunLoop`对象
+* `RunLoop`保存在一个全局的`Dictionary`里面，线程作为`key`，`RunLoop`作为`value`
+* 线程刚创建的时候没有`RunLoop`，在第一次获取的时候创建
+* `RunLoop`在线程结束时销毁
+* 主线程的`RunLoop`已经自动获取创建，子线程默认没有开启`RunLoop`
 
 ### 应用范畴
 
@@ -40,13 +40,13 @@ CFRunLoopRef mainloopRef = CFRunLoopGetMain();
 
 #### CFRunLoopModeRef
 
-* CFRunLoopModeRef代表RunLoop的运行模式
-* 一个RunLoop包含若干个Mode，每个Mode又包含若干Source0/Source1/Timer/Observer
-* RunLoop启动只能选择其中一个Mode，作为currentMode
-* 如果需要切换Mode，只能退出当前Loop，再重新选择一个Mode进入
-  - 不同组的Source0/Source1/Timer/Observer能分隔开来，互不影响
-* 如果Mode里没有任何Source0/Source1/Timer/Observer，RunLoop会立马退出
-* 常见的两种Mode
+* `CFRunLoopModeRef`代表`RunLoop`的运行模式
+* 一个`RunLoop`包含若干个`Mode`，每个`Mode`又包含若干`Source0/Source1/Timer/Observer`
+* `RunLoop`启动只能选择其中一个`Mode`，作为`currentMode`
+* 如果需要切换`Mode`，只能退出当前`Loop`，再重新选择一个Mode进入
+  - 不同组的`Source0/Source1/Timer/Observer`能分隔开来，互不影响
+* 如果`Mode`里没有任何`Source0/Source1/Timer/Observer`，RunLoop会立马退出
+* 常见的两种`Mode`
   * KCFRunLoopDefaultMode（NSDefaultRunLoopMode）：App的默认Mode，通常主线程在该Mode下运行
   * UITrackingRunLoopMode：界面跟踪Mode，用于ScrollView追踪触摸滑动，保证页面滑动时不受其他Mode影响
 
