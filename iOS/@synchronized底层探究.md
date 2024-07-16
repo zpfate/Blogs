@@ -1,8 +1,8 @@
 
 
-# @Synchronized底层探究
+# @synchronized底层探究
 
-## @Synchronized分析
+## @synchronized分析
 
 先将下面的代码使用`clang`命令分析一下：
 
