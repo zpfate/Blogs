@@ -478,8 +478,11 @@ dispatch_semaphore_signal(semaphore);
 #### @synchronized
 
 * <font color = red>@synchronized</font>是对mutex递归锁的封装
-
 * 源码查看objc-sync.mm
+  1. synchronized 的 obj 为 nil 怎么办？加锁操作无效。
+  2. synchronized 会对 obj 做什么操作吗？会为obj生成递归自旋锁，并建立关联，生成 SyncData，存储在当前线程的缓存里或者全局哈希表里。
+  3. synchronized 和 pthread_mutex 有什么关系？SyncData里的递归互斥锁，使用 pthread_mutex 实现的。
+  4. synchronized 和 objc_sync 有什么关系？synchronized 底层调用了 objc_sync_enter() 和 objc_sync_exit()
 
 ### iOS线程同步方案性能比较
 
@@ -666,33 +669,6 @@ GCD定时器更加准确，依赖于系统内核
 * iOS中使用引用计数来管理OC对象的内存，引用计数储存在isa指针中或者SideTable中
 * 一个新建的OC对象引用计数默认是1，当引用计数减为0，OC对象就会销毁，释放其占用的内存空间
 * 调用retain会让OC对象的引用计数+1，调用release会让OC对象的引用计数-1
-
-### copy和mutableCopy
-
-1. copy 不可变拷贝， 产生不可变副本
-2. mutableCopy可变拷贝，产生可变副本
-
-|             | NSString                                             | NSMutableString                                      | NSArray                                             | NSMutableArray                                      | NSDictionary                                             | NSMutableDictionary                                      |
-| ----------- | ---------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| copy        | NSString<br /><font color = green>浅拷贝</font>      | NSString<br /><font color = red>深拷贝</font>        | NSArray<br /><font color = green>浅拷贝</font>      | NSArray<br /><font color = red>深拷贝</font>        | NSDictionary<br /><font color = green>浅拷贝</font>      | NSDictionary<br /><font color = red>深拷贝</font>        |
-| mutableCopy | NSMutableString<br /><font color = red>深拷贝</font> | NSMutableString<br /><font color = red>深拷贝</font> | NSMutableArray<br /><font color = red>深拷贝</font> | NSMutableArray<br /><font color = red>深拷贝</font> | NSMutableDictionary<br /><font color = red>深拷贝</font> | NSMutableDictionary<br /><font color = red>深拷贝</font> |
-
-### weak
-
-weak是弱引用，用weak来修饰的引用对象的计数器不会增加，而且weak会在引用对象释放的时候，自动置为nil
-
-#### 当 weak 指向的对象被释放时，如何让 weak 指针置为 nil 的呢
-
-* 调用 objc_release
-* 因为对象的引用计数为0，所以执行 dealloc
-* 在 dealloc 中，调用了 _objc_rootDealloc 函数
-* 在 _objc_rootDealloc 中，调用了 object_dispose 函数
-* 调用 objc_destructInstance
-* 最后调用 objc_clear_deallocating,详细过程如下：
-  a. 从 weak 表中获取废弃对象的地址为键值的记录
-  b. 将包含在记录中的所有附有 weak 修饰符变量的地址，赋值为 nil
-  c. 将 weak 表中该记录删除
-  d. 从引用计数表中删除废弃对象的地址为键值的记录
 
 
 
