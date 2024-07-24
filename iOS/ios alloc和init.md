@@ -4,8 +4,6 @@
 
 ![alloc](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1720764256400)
 
-
-
 ### callAlloc
 
 ```c
@@ -13,9 +11,6 @@ static ALWAYS_INLINE id
 callAlloc(Class cls, bool checkNil, bool allocWithZone=false)// alloc 源码 第三步
 {
 #if __OBJC2__ //有可用的编译器优化
-    /*
-     参考链接：https://www.jianshu.com/p/536824702ab6
-     */
     
     // checkNil 为false，!cls 也为false ，所以slowpath 为 false，假值判断不会走到if里面，即不会返回nil
     if (slowpath(checkNil && !cls)) return nil;
@@ -57,7 +52,17 @@ slowpath和fastpath理解
 >
 > * slowpath定义中的__builtin_expect((x),0)表示 x 的值为假的可能性更大。即执行 else 里面语句的机会更大
 
+### _objc_rootAllocWithZone
 
+```objc
+NEVER_INLINE
+id _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
+{
+    // allocWithZone under __OBJC2__ ignores the zone parameter
+    return _class_createInstanceFromZone(cls, 0, nil,
+                                         OBJECT_CONSTRUCT_CALL_BADALLOC);
+}
+```
 
 ### _class_createInstanceFromZone
 
@@ -112,7 +117,7 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
 }
 ```
 
-c
+
 
 这部分代码实现是alloc的核心操作，主要做了三件事:
 

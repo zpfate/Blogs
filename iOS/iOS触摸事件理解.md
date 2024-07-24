@@ -4,12 +4,12 @@
 
 ### UITouch
 
-触摸，UITouch保存着跟手指相关的信息，比如触摸的位置、时间、阶段等。
+触摸，`UITouch`保存着跟手指相关的信息，比如触摸的位置、时间、阶段等。
 
-1.  当手指移动时，系统会更新同一个UITouch对象，使之能够一直保存该手指在的触摸位置。
+1.  当手指移动时，系统会更新同一个`UITouch`对象，使之能够一直保存该手指在的触摸位置。
     当手指离开屏幕时，系统会销毁相应的UITouch对象。
-2. 一个手指触摸一次屏幕就会生产一个UITouch对象，多个手指同时触摸屏幕，就会生成多个UITouch对象。
-3. 单个手指多次触摸屏幕（类似于双击等操作），系统会根据触摸的位置判断是否更新同一个UITouch对象（UITouch的tapCount属性也会随之更新）
+2. 一个手指触摸一次屏幕就会生产一个`UITouch`对象，多个手指同时触摸屏幕，就会生成多个`UITouch`对象。
+3. 单个手指多次触摸屏幕（类似于双击等操作），系统会根据触摸的位置判断是否更新同一个`UITouch`对象（`UITouch`的`tapCount`属性也会随之更新）
 
 ```objective-c
 // 触摸产生时所处的窗口
@@ -38,7 +38,7 @@
 
 ### UIEvent
 
-事件，记录事件产生的时刻和事件的类型。每产生一个事件，都会生成一个UIEvent对象。
+事件，记录事件产生的时刻和事件的类型。每产生一个事件，都会生成一个`UIEvent`对象。
 
 ```objective-c
 // 事件类型
@@ -48,11 +48,9 @@
 @property(nonatomic,readonly) NSTimeInterval  timestamp;
 ```
 
-
-
 ### UIResponder（响应者对象）
 
-着重介绍下UIResponder，在iOS中不是任何对象都能处理事件的，只有继承了UIResponder的对象才能接受并处理事件，称之为响应者对象。老生常谈，打开UIResponder类的官方文档：
+着重介绍下`UIResponder`，在iOS中不是任何对象都能处理事件的，只有继承了`UIResponder`的对象才能接受并处理事件，称之为响应者对象。老生常谈，打开`UIResponder`类的官方文档：
 
 ```objective-c
 // 响应链中下一个响应者
@@ -111,7 +109,7 @@
 @property (nonatomic, readonly) UIEditingInteractionConfiguration editingInteractionConfiguration API_AVAILABLE(ios(13.0));
 ```
 
-日常接触到的继承自UIResponder的类有三个:
+日常接触到的继承自`UIResponder`的类有三个:
 
 * AppDelegate
 * UIApplication
@@ -124,7 +122,7 @@
 
 应用接收到事件后，会先将其加入事件队列中以等待处理（队列的好处是先进先出）。
 
-1. UIApplication会事件传递给当前显示的窗口（UIWindow），如果存在多个窗口，优先询问后显示的窗口。
+1. `UIApplication`会事件传递给当前显示的窗口（`UIWindow`），如果存在多个窗口，优先询问后显示的窗口。
 2. 如果窗口可以响应事件，则传递给子视图；不能响应则将事件传递给其他窗口。
 3. 若子视图能响应，则从后往前询问当前视图的子视图；否则将事件传递给上一个同级的子视图，重复该步骤。
 4. 如果没有能响应的子视图，则自身就是最合适的响应者
@@ -150,7 +148,7 @@ UIApplication ——> UIWindow ——> 子视图 ——> ... ——> 子视图
 
 #### hitTest:withEvent:
 
-每个UIView对象都有一个 `hitTest:withEvent:` 方法，这个方法是Hit-Testing过程中最核心的存在，其作用是询问事件在当前视图中的响应者，同时又是作为事件传递的桥梁。大概实现的思路如下：
+每个UIView对象都有一个 `hitTest:withEvent:` 方法，这个方法是`Hit-Testing`过程中最核心的存在，其作用是询问事件在当前视图中的响应者，同时又是作为事件传递的桥梁。大概实现的思路如下：
 
 ```objective-c
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
@@ -176,10 +174,6 @@ UIApplication ——> UIWindow ——> 子视图 ——> ... ——> 子视图
     return self;
 }
 ```
-
-
-
-
 
 ## 参考链接
 

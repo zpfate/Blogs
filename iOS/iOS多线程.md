@@ -83,7 +83,7 @@
 
 * OSSpinLock
 * os_unfair_lock
-* Pthread_mutex
+* pthread_mutex
 * dispatch_semaphore
 * dispatch_quequ(DISPATCH_QUEUE_SERIAL)
 * NSLock
@@ -148,31 +148,31 @@
 ![image-20220402101501432](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648865702.png)
 
 ```objective-c
-    // 静态初始化
+  // 静态初始化
 //        pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
-    /**
-     #define PTHREAD_MUTEX_NORMAL        0
-     #define PTHREAD_MUTEX_ERRORCHECK    1
-     #define PTHREAD_MUTEX_RECURSIVE        2 递归锁
-     #define PTHREAD_MUTEX_DEFAULT        PTHREAD_MUTEX_NORMAL 普通的锁
-     */
-    
-    // 初始化锁的属性
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    // 锁的类型
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_DEFAULT);
-    // 初始化锁
-    pthread_mutex_t _mutex;
-    pthread_mutex_init(&_mutex, &attr);
-    // 销毁属性
-    pthread_mutexattr_destroy(&attr);
-   // 加锁
-    pthread_mutex_lock(&_mutex);
-    // 解锁
-    pthread_mutex_unlock(&_mutex);
-    // 销毁锁
-    pthread_mutex_destroy(&_mutex);
+  /**
+   #define PTHREAD_MUTEX_NORMAL        0
+   #define PTHREAD_MUTEX_ERRORCHECK    1
+   #define PTHREAD_MUTEX_RECURSIVE        2 递归锁
+   #define PTHREAD_MUTEX_DEFAULT        PTHREAD_MUTEX_NORMAL 普通的锁
+   */
+
+  // 初始化锁的属性
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  // 锁的类型
+  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_DEFAULT);
+  // 初始化锁
+  pthread_mutex_t _mutex;
+  pthread_mutex_init(&_mutex, &attr);
+  // 销毁属性
+  pthread_mutexattr_destroy(&attr);
+ // 加锁
+  pthread_mutex_lock(&_mutex);
+  // 解锁
+  pthread_mutex_unlock(&_mutex);
+  // 销毁锁
+  pthread_mutex_destroy(&_mutex);
 ```
 
 **递归锁** 允许<font color = red>同一个线程</font>对一把锁重复加锁
@@ -184,16 +184,16 @@
 
 ```objective-c
   // 初始化
-    NSLock *lock = [[NSLock alloc] init];
-    // 尝试加锁
-    [lock tryLock];
-    // 加锁
-    [lock lock];
-    // 解锁
-    [lock unlock];
-    // 在传入时间到来前加锁,时间没到就休眠,时间到了加锁,
-    // 加锁成功就返回YES,加锁失败或超出时间就返回NO
-    lock lockBeforeDate:<#(nonnull NSDate *)#>
+  NSLock *lock = [[NSLock alloc] init];
+  // 尝试加锁
+  [lock tryLock];
+  // 加锁
+  [lock lock];
+  // 解锁
+  [lock unlock];
+  // 在传入时间到来前加锁,时间没到就休眠,时间到了加锁,
+  // 加锁成功就返回YES,加锁失败或超出时间就返回NO
+  lock lockBeforeDate:<#(nonnull NSDate *)#>
 ```
 
 #### NSCondition
@@ -201,18 +201,18 @@
 * NSConditionLock是对mutex和cond条件锁的封装
 
 ```objective-c
-    // 初始化
-    NSCondition *condition = [[NSCondition alloc] init];
-    // 加锁
-    [condition lock];
-    // 等待
-    [condition wait];
-    // 通知
-    [condition signal];
-    // 广播
-    [condition broadcast];
-    // 解锁
-    [condition unlock];
+  // 初始化
+  NSCondition *condition = [[NSCondition alloc] init];
+  // 加锁
+  [condition lock];
+  // 等待
+  [condition wait];
+  // 通知
+  [condition signal];
+  // 广播
+  [condition broadcast];
+  // 解锁
+  [condition unlock];
 ```
 
 
@@ -223,16 +223,16 @@
 * 可以设置条件的值
 
 ```objective-c
-   // 初始化 默认condition为0
-    NSConditionLock *conditionLock = [[NSConditionLock alloc] initWithCondition:1];
-    // 加锁 直接加锁 不管condition的值
-    [conditionLock lock];
-    // 符合条件加锁
-    [conditionLock lockWhenCondition:1];
-    // 解锁
-    [conditionLock unlock];
-    // 符合条件解锁
-    [conditionLock unlockWithCondition:1];
+  // 初始化 默认condition为0
+  NSConditionLock *conditionLock = [[NSConditionLock alloc] initWithCondition:1];
+  // 加锁 直接加锁 不管condition的值
+  [conditionLock lock];
+  // 符合条件加锁
+  [conditionLock lockWhenCondition:1];
+  // 解锁
+  [conditionLock unlock];
+  // 符合条件解锁
+  [conditionLock unlockWithCondition:1];
 ```
 
 #### dispatch_queue
@@ -240,13 +240,12 @@
 * 直接使用GCD的串行队列，也是可以实现线程同步的
 
 ```objective-c
-// 创建队列
-dispatch_quue_t queue = dispatch_queue_create("ticket", 
-DISPATCH_QUEUE_SERIAL);
-// 同步执行
-dispatch_sync(queue, ^{
-    [super _saveMoney];
-});
+  // 创建队列
+  dispatch_quue_t queue = dispatch_queue_create("ticket", DISPATCH_QUEUE_SERIAL);
+  // 同步执行
+  dispatch_sync(queue, ^{
+      [super _saveMoney];
+  });
 ```
 
 #### dispatch_semaphore
@@ -255,15 +254,15 @@ dispatch_sync(queue, ^{
 * 信号量的初始值 可以用来控制线程并发访问的最大数量
 
 ```objective-c
-// 信号量初始值
-int value = 1;
-// 初始化信号量
-dispatch_semaphore_t semaphore = dispatch_semaphore_create(value);
-// 如果信号量的值<=0,当前线程就会进入休眠等待(直到信号量的值>0)
-// 如果信号的值>0,就减一,然后往下执行代码
-dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-// 让信号量的值-1
-dispatch_semaphore_signal(semaphore);
+  // 信号量初始值
+  int value = 1;
+  // 初始化信号量
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(value);
+  // 如果信号量的值<=0,当前线程就会进入休眠等待(直到信号量的值>0)
+  // 如果信号的值>0,就减一,然后往下执行代码
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  // 让信号量的值-1
+  dispatch_semaphore_signal(semaphore);
 ```
 
 #### @synchronized
@@ -324,26 +323,26 @@ dispatch_semaphore_signal(semaphore);
 使用需要#import <pthread.h>
 
 ```objective-c
-- (void)initLock {
-  // 初始化
-  pthread_rwlock_init(&_lock, NULL);
-}
+  - (void)initLock {
+    // 初始化
+    pthread_rwlock_init(&_lock, NULL);
+  }
 
-- (void)read {
-    // 加锁
-    pthread_rwlock_rdlock(&_lock);
+  - (void)read {
+      // 加锁
+      pthread_rwlock_rdlock(&_lock);
 
-    NSLog(@"%s", __func__);
-    pthread_rwlock_unlock(&_lock);
-}
+      NSLog(@"%s", __func__);
+      pthread_rwlock_unlock(&_lock);
+  }
 
-- (void)write {
-    // 加锁
-    pthread_rwlock_wrlock(&_lock);
-    NSLog(@"%s", __func__);
-    // 解锁
-    pthread_rwlock_unlock(&_lock);
-}
+  - (void)write {
+      // 加锁
+      pthread_rwlock_wrlock(&_lock);
+      NSLog(@"%s", __func__);
+      // 解锁
+      pthread_rwlock_unlock(&_lock);
+  }
 ```
 
 #### dispatch_barrier_async
@@ -352,14 +351,14 @@ dispatch_semaphore_signal(semaphore);
 * 如果传入的是一个串行或是一个全局并发队列，那这个函数变等同于dispatch_async的效果
 
 ```objective-c
-    dispatch_queue_t queue = dispatch_queue_create("rw", DISPATCH_QUEUE_CONCURRENT);
-    dispatch_async(queue, ^{
-       // 读
-        [self read];
-    });
-    dispatch_barrier_async(queue, ^{
-        [self write];  // 写
-    });
+  dispatch_queue_t queue = dispatch_queue_create("rw", DISPATCH_QUEUE_CONCURRENT);
+  dispatch_async(queue, ^{
+     // 读
+      [self read];
+  });
+  dispatch_barrier_async(queue, ^{
+      [self write];  // 写
+  });
 ```
 
 ## 

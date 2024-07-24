@@ -220,8 +220,7 @@ struct weak_entry_t {
 
 
 ```c++
-void 
-weak_clear_no_lock(weak_table_t *weak_table, id referent_id) 
+void weak_clear_no_lock(weak_table_t *weak_table, id referent_id) 
 {
     //1、拿到被销毁对象的指针
     objc_object *referent = (objc_object *)referent_id;

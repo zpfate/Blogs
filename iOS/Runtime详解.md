@@ -1,14 +1,14 @@
 ## Runtime
 
-Objective-C是一门动态性编程语言，动态性由Runtime API支撑
+`Objective-C`是一门动态性编程语言，动态性由`Runtime API`支撑
 
-Runtime是一套c语言的api，封装了很多动态性相关的函数
+`Runtime`是一套c语言的`api`，封装了很多动态性相关的函数
 
-平时编写的Objc代码，底层都是转成了Runtime API进行调用
+平时编写的`Objc`代码，底层都是转成了`Runtime API`进行调用
 
 ### isa
 
-在arm64位架构之前，isa就是一个普通的指针，存储着Class、Meta-Class对象的内存地址
+在arm64位架构之前，isa就是一个普通的指针，存储着`Class`、`Meta-Class`对象的内存地址
 
 从arm64架构开始，对isa进行了优化，变成了一个共用体（union）结构，还使用位域存储更多信息
 
@@ -71,9 +71,11 @@ Runtime是一套c语言的api，封装了很多动态性相关的函数
 
 #### 消息转发
 
-NSInvocation封装了一个方法调用，包括了 方法调用者、方法、方法参数
+NSInvocation封装了一个方法调用，包括了*方法调用者、方法、方法参数*。
 
 ![image-20220324172139395](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648113699.png)
+
+
 
 ```objective-c
 // 消息转发
@@ -103,7 +105,6 @@ NSInvocation封装了一个方法调用，包括了 方法调用者、方法、�
     return [super methodSignatureForSelector:aSelector];
 }
 
-
 + (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
     if (aSelector == @selector(test)) {
         Method method = class_getClassMethod([Cat class], @selector(test));
@@ -118,7 +119,6 @@ NSInvocation封装了一个方法调用，包括了 方法调用者、方法、�
 // anInvocation.selector 方法名
 // [anInvocation getArgument:NULL atIndex:0] 方法参数 参数顺序receiver,selector,other
 // [anInvocation getReturnValue:&value]; 获取返回值
-
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
 //    anInvocation.target = [[Cat alloc] init];
 //    [anInvocation invoke];
@@ -126,10 +126,13 @@ NSInvocation封装了一个方法调用，包括了 方法调用者、方法、�
 }
 
 + (void)forwardInvocation:(NSInvocation *)anInvocation {
-
     [anInvocation invokeWithTarget:[Cat class]];
 }
 ```
+
+![img](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1721721172142)
+
+
 
 #### super
 
@@ -172,4 +175,3 @@ super底层调用的是objc_msgSendSuper函数
 
 ![image-20220329093504754](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1648517705.png)
 
-## 

@@ -1,14 +1,8 @@
 
 
-## KVO相关
 
-Key-Value Observing 键值监听
 
-### 实现原理
 
-![image-20220314222151383](https://github.com/zpfate/uPic/2022%2003%20141647269033.png)
-
-在程序运行中，动态创建一个NSKVONotifiying_XXX类
 
 
 
@@ -68,32 +62,7 @@ category的底层结构是_category_t的结构体，所含的方法在运行中�
 
   ![image-20220224154855636](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_02_24_15_48_55.png)
 
-## load和initialize
-
-### 区别
-
-#### 调用方式
-
-1. load方式是根据函数地址直接调用
-2. initialize是通过objc_msgSend调用
-
-#### 调用时刻
-
-1. load是runtime加载类、分类的时候调用（只会调用一次）
-2. initialize是类第一次收到消息的时候调用，每一个类只会初始化一次（父类的initialize方法可能被调用多次）
-
-#### 调用顺序
-
-##### load
-
-1. 先调用类的load，先编译的类先调用
-2. 调用子类的load之前，会先调用父类的load
-3. 再调用分类的load，先编译的分类，先调用
-
-##### initialize
-
-1. 先初始化父类
-2. 再初始化子类（子类没有则调用父类的initialize方法）
+2. 
 
 
 
@@ -667,10 +636,12 @@ GCD定时器更加准确，依赖于系统内核
 ### 内存管理
 
 * iOS中使用引用计数来管理OC对象的内存，引用计数储存在isa指针中或者SideTable中
+
 * 一个新建的OC对象引用计数默认是1，当引用计数减为0，OC对象就会销毁，释放其占用的内存空间
+
 * 调用retain会让OC对象的引用计数+1，调用release会让OC对象的引用计数-1
 
-
+  
 
 ## 性能优化
 
