@@ -11,16 +11,13 @@ static ALWAYS_INLINE id
 callAlloc(Class cls, bool checkNil, bool allocWithZone=false)// alloc 源码 第三步
 {
 #if __OBJC2__ //有可用的编译器优化
-    
     // checkNil 为false，!cls 也为false ，所以slowpath 为 false，假值判断不会走到if里面，即不会返回nil
     if (slowpath(checkNil && !cls)) return nil;
-    
     // 判断一个类是否有自定义的 +allocWithZone 实现，没有则走到if里面的实现
     if (fastpath(!cls->ISA()->hasCustomAWZ())) {
         return _objc_rootAllocWithZone(cls, nil);
     }
 #endif
-
     // No shortcuts available. // 没有可用的编译器优化
     if (allocWithZone) {
         return ((id(*)(id, SEL, struct _NSZone *))objc_msgSend)(cls, @selector(allocWithZone:), nil);
@@ -73,18 +70,15 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
                               size_t *outAllocatedSize = nil)// alloc 源码 第五步
 {
     ASSERT(cls->isRealized()); //检查是否已经实现
-
     // Read class's info bits all at once for performance
     //一次性读取类的位信息以提高性能
     bool hasCxxCtor = cxxConstruct && cls->hasCxxCtor();
     bool hasCxxDtor = cls->hasCxxDtor();
     bool fast = cls->canAllocNonpointer();
     size_t size;
-
     //计算需要开辟的内存大小，传入的extraBytes 为 0
     size = cls->instanceSize(extraBytes);
     if (outAllocatedSize) *outAllocatedSize = size;
-
     id obj;
     if (zone) {
         obj = (id)malloc_zone_calloc((malloc_zone_t *)zone, 1, size);
@@ -98,7 +92,6 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
         }
         return nil;
     }
-
     if (!zone && fast) {
         // 将 cls类 与 obj指针（即isa） 关联
         obj->initInstanceIsa(cls, hasCxxDtor);
@@ -107,11 +100,9 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
         // doing something weird with the zone or RR.
         obj->initIsa(cls);
     }
-
     if (fastpath(!hasCxxCtor)) {
         return obj;
     }
-
     construct_flags |= OBJECT_CONSTRUCT_FREE_ONFAILURE;
     return object_cxxConstructFromClass(obj, cls, construct_flags);
 }

@@ -75,13 +75,13 @@ abstract class Element extends DiagnosticableTree implements BuildContext {
 
 为什么不直接用`Widget`命令`RenderObject`去渲染，因为会极大的增加渲染带来的性能消耗。
 
-因为 `Widget` 具有不可变性，但 `Element` 却是可变的。实际上，`Element` 树这一层将 `Widget` 树的变化（类似 React 虚拟 DOM diff）做了抽象，可以只将真正需要修改的部分同步到真实的`RenderObject`树中，最大程度降低对真实渲染视图的修改，提高渲染效率，而不是销毁整个渲染视图树重建。
+因为 `Widget` 具有不可变性，但`Element` 却是可变的。实际上，`Element`树这一层将`Widget`树的变化（类似 React 虚拟 DOM diff）做了抽象，可以只将真正需要修改的部分同步到真实的`RenderObject`树中，最大程度降低对真实渲染视图的修改，提高渲染效率，而不是销毁整个渲染视图树重建。
 
 ## RenderObject
 
 `RenderObject`是主要负责实现视图渲染的对象。
 
-`Flutter` 通过控件树（`Widget`树）中的每个控件（`Widget`）创建不同类型的渲染对象，组成渲染对象树。而渲染对象树在 `Flutter` 的展示过程分为四个阶段，即布局、绘制、合成和渲染。 其中，布局和绘制在`RenderObject`中完成，`Flutter`采用深度优先机制遍历渲染对象树，确定树中各个对象的位置和尺寸，并把它们绘制到不同的图层上。绘制完毕后，合成和渲染的工作则交给 `Skia`搞定。
+`Flutter` 通过控件树（`Widget`树）中的每个控件（`Widget`）创建不同类型的渲染对象，组成渲染对象树。而渲染对象树在`Flutter`的展示过程分为四个阶段，即布局、绘制、合成和渲染。 其中，布局和绘制在`RenderObject`中完成，`Flutter`采用深度优先机制遍历渲染对象树，确定树中各个对象的位置和尺寸，并把它们绘制到不同的图层上。绘制完毕后，合成和渲染的工作则交给`Skia`搞定。
 
 ### RenderObjectWidget
 
@@ -97,7 +97,7 @@ abstract class RenderObjectWidget extends Widget {
 }
 ```
 
-`RenderObjectWidget`是一个抽象类。我们通过源码可以看到，这个类中同时拥有创建`Element`、`RenderObject`，以及更新 `RenderObject` 的方法。
+`RenderObjectWidget`是一个抽象类。我们通过源码可以看到，这个类中同时拥有创建`Element`、`RenderObject`，以及更新`RenderObject`的方法。
 
 对于`Element`的创建，`Flutter`会在遍历`Widget`树时，调用`createElement`去同步`Widget`自身配置，从而生成对应节点的`Element`对象。而对于`RenderObject`的创建与更新，其实是在`RenderObjectElement`类中完成的。
 
@@ -127,7 +127,7 @@ abstract class RenderObjectElement extends Element {
 
 
 
-如果`Widget`的配置数据发生了改变，那么持有该`Widget`的`Element`节点也会被标记为`dirty`。在下一个周期的绘制时，`Flutter`就会触发`Element`树的更新，并使用最新的`Widget`数据更新自身以及关联的`RenderObject`对象，接下来便会进入`Layout`和 `Paint` 的流程。而真正的绘制和布局过程，则完全交由 `RenderObject` 完成：
+如果`Widget`的配置数据发生了改变，那么持有该`Widget`的`Element`节点也会被标记为`dirty`。在下一个周期的绘制时，`Flutter`就会触发`Element`树的更新，并使用最新的`Widget`数据更新自身以及关联的`RenderObject`对象，接下来便会进入`Layout`和`Paint`的流程。而真正的绘制和布局过程，则完全交由`RenderObject`完成：
 
 ```dart
 abstract class RenderObject extends AbstractNode with DiagnosticableTreeMixin implements HitTestTarget {

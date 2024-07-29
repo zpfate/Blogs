@@ -2,7 +2,7 @@
 
 ## MRC下使用
 
-在MRC环境中使用自动释放池需要用到 `NSAutoreleasePool`对象，其生命周期就相当于C语言变量的作用域。对于所有调用过`autorelease`方法的对象，在废弃 `NSAutoreleasePool`对象时，都将调用 `release`实例方法。
+在MRC环境中使用自动释放池需要用到`NSAutoreleasePool`对象，其生命周期就相当于C语言变量的作用域。对于所有调用过`autorelease`方法的对象，在废弃 `NSAutoreleasePool`对象时，都将调用`release`实例方法。
 
 ```objective-c
 //MRC环境下的测试：
@@ -22,7 +22,7 @@ NSLog(@"打印obj：%@", obj);
 
 ## ARC下使用
 
-ARC环境不能使用 `NSAutoreleasePool`类也不能调用 `autorelease`方法，代替它们实现对象自动释放的是 `@autoreleasepool`块和 `__autoreleasing`修饰符。
+ARC环境不能使用`NSAutoreleasePool`类也不能调用`autorelease`方法，代替它们实现对象自动释放的是`@autoreleasepool`块和`__autoreleasing`修饰符。
 
 ```objective-c
 //ARC环境下的测试：
@@ -41,7 +41,6 @@ int main(int argc, const char * argv[]) {
         __AtAutoreleasePool __autoreleasepool;
         NSLog((NSString *)&__NSConstantStringImpl__var_folders_3f_crl5bnj956d806cp7d3ctqhm0000gn_T_main_d37e0d_mi_0);
      }//大括号对应释放池的作用域
-
      return 0;
 }
 ```
@@ -59,14 +58,10 @@ struct __AtAutoreleasePool {
 };
 ```
 
-
-
-* 自动释放池的主要底层数据结构是：``__AutoReleasePool`，`AutoReleasePoolPage`
-* 调用了``autorelease`的对象最终都是通过`AutoReleasePoolPage`
+* 自动释放池的主要底层数据结构是`__AutoReleasePool`，`AutoReleasePoolPage`
+* 调用了`autorelease`的对象最终都是通过`AutoReleasePoolPage`
 * 每个`AutoReleasePoolPage`对象占用4096字节内存，除了用来存放他内部的成员变量，剩下的空间用来存放`autorelease`对象的地址
 * 所有的`AutoReleasePoolPage`对象是通过双向链表的形式连接在一起
-
-
 
 ## AutoreleasePoolPage的结构
 
@@ -84,26 +79,24 @@ class AutoreleasePoolPage {
         PAGE_MAX_SIZE;  // size and alignment, power of 2
 #endif
     static size_t const COUNT = SIZE / sizeof(id);
-    magic_t const magic;                  //校验AutoreleasePagePoolPage结构是否完整
-    id *next;                             //指向新加入的autorelease对象的下一个位置，初始化时指向begin()
-    pthread_t const thread;               //当前所在线程，AutoreleasePool是和线程一一对应的
-    AutoreleasePoolPage * const parent;   //指向父节点page，第一个结点的parent值为nil
-    AutoreleasePoolPage *child;           //指向子节点page，最后一个结点的child值为nil
-    uint32_t const depth;                 //链表深度，节点个数
-    uint32_t hiwat;                       //数据容纳的一个上限
+    magic_t const magic;                  // 校验AutoreleasePagePoolPage结构是否完整
+    id *next;                             // 指向新加入的autorelease对象的下一个位置，初始化时指向begin()
+    pthread_t const thread;               // 当前所在线程，AutoreleasePool是和线程一一对应的
+    AutoreleasePoolPage * const parent;   // 指向父节点page，第一个结点的parent值为nil
+    AutoreleasePoolPage *child;           // 指向子节点page，最后一个结点的child值为nil
+    uint32_t const depth;                 // 链表深度，节点个数
+    uint32_t hiwat;                       // 数据容纳的一个上限
     //......
 };
 ```
 
-
-
-* `magic` 用来校验 `AutoreleasePoolPage` 的结构是否完整；
-* `next` 指向最新添加的 `autoreleased `对象的下一个位置，初始化时指向 begin() ；
+* `magic` 用来校验`AutoreleasePoolPage`的结构是否完整；
+* `next` 指向最新添加的`autorelease`对象的下一个位置，初始化时指向 begin() ；
 * `thread` 指向当前线程；
-* `parent` 指向父结点，第一个结点的 `parent` 值为 `nil` ；
-* `child` 指向子结点，最后一个结点的 `child` 值为` nil` ；
-* `depth` 代表深度，从 0 开始，往后递增 1；
-* `hiwat` 代表 `high water mark `。
+* `parent` 指向父结点，第一个结点的`parent`值为`nil`；
+* `child` 指向子结点，最后一个结点的`child`值为` nil`；
+* `depth` 代表深度，从0开始，往后递增1；
+* `hiwat` 代表`high water mark`。
 
 ![img](https://upload-images.jianshu.io/upload_images/5835116-170e421948bfb845.png?imageMogr2/auto-orient/strip|imageView2/2/w/836/format/webp)
 
@@ -121,9 +114,9 @@ iOS在主线程的`RunLoop`注册了2个`Observer`
 
 * 第二个`Observer`监听了`KCFRunLoopBeforeWaiting`事件，会调用`objc_autoreleasePoolPop()`、`objc_autoreleasePoolPush()`，监听了`KCFRunLoopBeforeExit`事件，会调用`objc_autoreleasePoolPop()`
 
-每一个线程都会维护自己的 `Autoreleasepool`栈，所以子线程虽然默认没有开启 `RunLoop`，但是依然存在 `AutoreleasePool`，在子线程退出的时候会去释放` autorelease`对象。
+每一个线程都会维护自己的`Autoreleasepool`栈，所以子线程虽然默认没有开启`RunLoop`，但是依然存在`AutoreleasePool`，在子线程退出的时候会去释放` autorelease`对象。
 
-`ARC`会根据一些情况进行优化，添加 `__autoreleasing`修饰符，其实这就相当于对需要延时释放的对象调用了 `autorelease`方法。从源码分析的角度来看，如果子线程中没有创建 `AutoreleasePool` ，而一旦产生了 `Autorelease`对象，就会调用 `autoreleaseNoPage`方法自动创建 `hotpage`，并将对象加入到其栈中。所以，一般情况下，子线程中即使我们不手动添加自动释放池，也不会产生内存泄漏。
+`ARC`会根据一些情况进行优化，添加`__autoreleasing`修饰符，其实这就相当于对需要延时释放的对象调用了`autorelease`方法。从源码分析的角度来看，如果子线程中没有创建`AutoreleasePool`，而一旦产生了`Autorelease`对象，就会调用`autoreleaseNoPage`方法自动创建`hotpage`，并将对象加入到其栈中。所以，一般情况下，子线程中即使我们不手动添加自动释放池，也不会产生内存泄漏。
 
 ### AutoreleasePool需要手动添加的情况
 
