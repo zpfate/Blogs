@@ -37,7 +37,7 @@ if (!_active)
 }
 ```
 
-*查看*BuildOwner的源码可以发现这个是一个Element的管理类
+查看`BuildOwner`的源码可以发现这个是一个`Element`的管理类
 
 ```dart
 class BuildOwner {
@@ -85,7 +85,7 @@ void scheduleBuildFor(Element element) {
 }
 ```
 
-1. 将`element`添加到脏列表_dirtyElements中,并触发`WidgetsBinding`的回调。
+1. 将`element`添加到脏列表`_dirtyElements`中,并触发`WidgetsBinding`的回调。
 
    > `onBuildScheduled()`回调在`WidgetsBinding`类中执行
 
@@ -142,7 +142,7 @@ void ensureVisualUpdate() {
 
 ## scheduleFrame
 
-1. 在`SchedulerBinding`请求新的frame，注册 Vsync 信号。
+1. 在`SchedulerBinding`请求新的`frame`，注册`Vsync`信号。
 
 ```dart
 void scheduleFrame() {
@@ -164,7 +164,7 @@ void ensureFrameCallbacksRegistered() {
 }
 ```
 
-* Flutter在window上注册一个`onBeginFrame`和一个`onDrawFrame`回调，在`onDrawFrame`回调中最终会调用`drawFrame`。
+* Flutter在`window`上注册一个`onBeginFrame`和一个`onDrawFrame`回调，在`onDrawFrame`回调中最终会调用`drawFrame`。
 * 当我们调用`window.scheduleFrame()`方法之后，`Flutter`引擎会在合适的时机（可以认为是在屏幕下一次刷新之前，具体取决于`Flutter`引擎的实现）来调用`onBeginFrame`和`onDrawFrame`。
 
 ## onBeginFrame、onDrawFrame
@@ -203,9 +203,9 @@ void handleBeginFrame(Duration? rawTimeStamp) {
 }
 ```
 
-* 主要就是遍历_transientCallbacks，执行相应的Animate操作， 可通过`scheduleFrameCallback()`/`cancelFrameCallbackWithId()`来完成添加和删除成员 最后将调度状态更新到`SchedulerPhase`.`midFrameMicrotasks`.
+* 主要就是遍历`_transientCallbacks`，执行相应的`Animate`操作， 可通过`scheduleFrameCallback()`、`cancelFrameCallbackWithId()`来完成添加和删除成员 最后将调度状态更新到`SchedulerPhase`.`midFrameMicrotasks`.
 
-* handleDrawFrame():
+* `handleDrawFrame()`
 
 ```dart
 void handleDrawFrame() {
@@ -233,7 +233,7 @@ void handleDrawFrame() {
 }
 ```
 
-* `_postFrameCallbacks`可通过`addPersistentFrameCallback()`注册，一旦注册后不可移除，后续每一次`frame`回调都会执行,`handleDrawFrame()`执行完成后会清空`_postFrameCallbacks`内容`_postFrameCallbacks`主要是状态清理，准备调度下一帧`frame`绘制请求。_
+* `_postFrameCallbacks`可通过`addPersistentFrameCallback()`注册，一旦注册后不可移除，后续每一次`frame`回调都会执行,`handleDrawFrame()`执行完成后会清空`_postFrameCallbacks`内容`_postFrameCallbacks`主要是状态清理，准备调度下一帧`frame`绘制请求。
 * 当遍历`_persistentCallbacks`时会执行相应的回调方法也就是通过`addPersistentFrameCallback`添加注册的`handlePersistentFrameCallback()`方法。最后会执行`RendererBinding`的`drawFrame`方法
 
 ## 调用RendererBinding和drawFrame方法
