@@ -1,5 +1,7 @@
 # Flutter setState流程
 
+![image-20240730154811596](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1722325693329)
+
 ## setState
 
 1. 先执行闭包函数`fn`，我们都知道`setState`包裹的会先执行再刷新
