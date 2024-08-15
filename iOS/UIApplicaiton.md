@@ -43,13 +43,13 @@ UIApplication类还定义了一个delegate（AppDelegate），该delegate遵循U
 
 * delegateWindow
 
-  ```
+  ```objc
   [UIApplication sharedApplication].delegate.window
   ```
 
 * keyWindow
 
-  ```
+  ```objective-c
   [UIApplication sharedApplication].keyWindow
   ```
 

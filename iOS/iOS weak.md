@@ -130,8 +130,6 @@ storeWeak(id *location, objc_object *newObj)
 }
 ```
 
-
-
 ### SideTable
 
 ```c++
@@ -158,8 +156,6 @@ struct weak_table_t {
 };
 ```
 
-
-
 ### weak_entry_t
 
 ```c++
@@ -185,7 +181,7 @@ struct weak_entry_t {
 
 
 
-#### 当 weak 指向的对象被释放时，如何让 weak 指针置为 nil 的呢
+**当 weak 指向的对象被释放时，如何让 weak 指针置为 nil 的呢**
 
 * 调用 objc_release
 * 因为对象的引用计数为0，所以执行 dealloc
@@ -214,8 +210,6 @@ struct weak_entry_t {
         table.refcnts.erase(it);
  }
 ```
-
-
 
 
 
@@ -271,3 +265,16 @@ void weak_clear_no_lock(weak_table_t *weak_table, id referent_id)
 }
 ```
 
+
+
+## weak创建流程
+
+![img](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1722416525274)
+
+
+
+
+
+## weak销毁
+
+![img](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1722416537413)

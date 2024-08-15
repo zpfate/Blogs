@@ -90,8 +90,6 @@ if let actualOptionalString = optionalString {
 let optionalStringCount = optionalString.unsafelyUnwrapped.count
 ```
 
-
-
 ## 字符串处理
 
 ### 声明字符串
@@ -158,5 +156,5 @@ swift Playground注释支持markup语法 与markdown相似
 */
 ```
 
-点击上方菜单Editor ->show Rendered
+点击上方菜单Editor ->`show Rendered`
 

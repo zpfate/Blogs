@@ -25,6 +25,8 @@ category的底层结构是_category_t的结构体，所含的方法在运行中�
 
 
 
+![img](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1722416316433)
+
 ## Category不能添加属性的原因
 
 1. **编译时特性**：Objective-C的属性（@property）是在编译时由编译器处理的。当你在类中声明一个属性时，编译器会自动为你生成相应的实例变量（在.m文件中以_前缀表示）以及getter和setter方法。这个过程是在编译期间完成的，而category是在运行时加载的，因此编译器无法为category中的属性生成实例变量和访问方法。
