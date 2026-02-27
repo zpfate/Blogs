@@ -2,7 +2,9 @@
 
 Block是将函数极其执行上下文封装起来的对象。
 
-![image-20210315163225613](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2021_03_15_16_32_26.png)
+
+
+
 
 通过`clang -rewrite-objc`命令编译该.m文件
 
@@ -10,11 +12,11 @@ Block是将函数极其执行上下文封装起来的对象。
 
 发现`block`被编译成如下所示：
 
-![block通过clang-rewrite-objc编译](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2021_03_15_16_40_31.png "block通过clang-rewrite-objc编译")
+![block通过clang-rewrite-objc编译](images/block1.png "block通过clang-rewrite-objc编译")
 
 `block`本质是一个`OC`对象，内部也有`isa`指针，封装了函数调用以及函数调用环境
 
-![img](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_02_16_09_53_59.jpg)
+![img](images/block2.jpg)
 
 1. `isa`指针，所有对象都有该指针，用于实现对象相关的功能。
 2. `flags`，用于按`bit`位表示一些`block`的附加信息，本文后面介绍`block copy`的实现代码可以看到对该变量的使用。
@@ -25,13 +27,13 @@ Block是将函数极其执行上下文封装起来的对象。
 
 ### 变量捕获
 
-![image-20220302170846862](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_02_17_08_47.png)
+![image-20220302170846862](images/block类型.png)
 
 <font color=red>*auto默认的变量申明关键字，与static相对*</font>
 
 ![image-20220303092726423](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_09_27_26.png
 
-![image-20220307135319690](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_07_13_53_20.png)
+![image-20220307135319690](images/auto变量block.png)
 
 ### 三种block
 
@@ -39,7 +41,7 @@ Block是将函数极其执行上下文封装起来的对象。
 2. `NSStackBlock` 保存在栈中的`block`，访问了`auto`变量，当函数返回时会被销毁。
 3. `NSMallocBlock` 保存在堆中的`block`，`NSStackBlock`调用了`copy`变成`NSMallocBlock`， 当引用计数为0时会被销毁。
 
-![image-20220303101903412](https://cdn.jsdelivr.net/gh/ZpFate/ImageService@master/uPic/img_2022_03_03_10_19_03.png)
+![image-20220303101903412](images/三种block.png)
 
 ### __block
 
@@ -121,5 +123,5 @@ Block是将函数极其执行上下文封装起来的对象。
 
   
 
-  ![image-20220316165156112](https://cdn.jsdelivr.net/gh/zpfate/ImageService@master/uPic/1647850786.png)
+  ![image-20220316165156112](images/block循环引用.png)
 

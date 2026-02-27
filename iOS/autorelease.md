@@ -16,7 +16,7 @@ id obj = [[NSObject alloc] init];
 //第三步：废弃NSAutoreleasePool对象;
 [pool drain];   //向pool管理的所有对象发送消息，相当于[obj release]
 
-//obi已经释放，再次调用会崩溃(Thread 1: EXC_BAD_ACCESS (code=EXC_I386_GPFLT))
+//obj已经释放，再次调用会崩溃(Thread 1: EXC_BAD_ACCESS (code=EXC_I386_GPFLT))
 NSLog(@"打印obj：%@", obj);
 ```
 
@@ -106,7 +106,7 @@ class AutoreleasePoolPage {
 
 ## RunLoop和AutoRelease
 
-![ios 什么是自动释放池 ios自动释放池原理_自动释放池_05](https://raw.githubusercontent.com/zpfate/ImageService/master/uPic/1719821549039)
+![ios 什么是自动释放池 ios自动释放池原理_自动释放池_05](images/RunLoop和AutoRelease.png)
 
 iOS在主线程的`RunLoop`注册了2个`Observer`
 
